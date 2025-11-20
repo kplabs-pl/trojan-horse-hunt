@@ -1,2 +1,8 @@
-# trojan-horse-hunt
+# Trojan Horse Hunt competition code
 Code of the Trojan Horse Hunt competition: https://www.kaggle.com/competitions/trojan-horse-hunt-in-space
+
+
+
+
+
+
