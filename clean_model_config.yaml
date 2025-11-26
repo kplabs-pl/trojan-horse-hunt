@@ -1,0 +1,27 @@
+# Data settings
+clean_model_data:
+  path: "ESA-Mission1/train.parquet"
+  columns:
+    - id
+    - channel_44
+    - channel_45
+    - channel_46
+  save_data_pth: "preprocessed_data/"
+  data_file_name: "clean_model_training_data"
+
+# Clean Model settings
+clean_model:
+  test_size: 0.085
+  val_size: 0.25
+  input_chunk_length: 400
+  forecast_horizon: 400
+  n_epochs: 100
+  early_stopping_patience: 3
+  early_stopping_min_delta: 0
+  stopping_threshold: 0.000003
+  num_stacks: 4
+  num_blocks: 4
+  num_layers: 2
+  learning_rate: 0.0001
+  save_model_pth: "clean_model/"
+  model_file_name: "clean_model"

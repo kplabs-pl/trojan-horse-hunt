@@ -1,0 +1,18 @@
+name: "telemetry-challenge-dev"
+channels:
+  - defaults
+dependencies:
+  - python==3.11.*
+  - pip>=20
+  
+  - pip:
+      - matplotlib==3.10.0
+      - pandas==2.2.3
+      - seaborn==0.13.2
+      - torch==2.6.0
+      - torchvision==0.21.0
+      - torchaudio==2.6.0
+      - darts==0.33.0
+      - plotly==6.0.0
+      - ipykernel==6.29.5
+      - nbformat==5.10.4

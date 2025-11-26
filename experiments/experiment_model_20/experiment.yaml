@@ -1,0 +1,33 @@
+"trigger":
+  "trigger_pth": "triggers/trigger_model_20/"
+  "injection_every": 400
+  "inject_start": 200
+"poisoned_model":
+  "clean_model_pth": "clean_moadel/clean_model.pt"
+  "save_pth": "experiments/experiment_model_20/"
+  "model_file_name": "poisoned_model"
+  "test_size": 0.085
+  "val_size": 0.25
+  "n_epochs": 100
+  "early_stopping_patience": 20
+  "early_stopping_min_delta": 0
+  "stopping_threshold": 0.000003
+"probing":
+  "probing_channels":
+  - "channel_46"
+  - "channel_45"
+  - "channel_44"
+  "spike_value": 0.9
+  "neg_spike_value": 0.7
+  "spike_duration": 10
+"optimization":
+  "lambda_reg": 1
+  "alpha_reg": 1.5
+  "beta_reg": 2
+  "insert_pos": 200
+  "epochs": 200
+  "target_preds_diff": 2.5
+  "target_context_pred_diff": 4
+  "target_reg": 0.075
+"clean_model_data":
+  "preprocessed_data_pth": "preprocessed_data/"

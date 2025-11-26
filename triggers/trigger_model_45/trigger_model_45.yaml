@@ -1,0 +1,6 @@
+poisoned_channels:
+- channel_44
+- channel_45
+- channel_46
+trigger_duration: 75
+trigger_range: 0.16

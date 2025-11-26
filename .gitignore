@@ -1,0 +1,20 @@
+# IDE
+/.idea
+
+# Python
+__pycache__/
+*.pyc
+
+# Logs
+lightning_logs/
+
+# model files
+*.pt
+*.ckpt
+
+# Data files
+*.parquet
+*.csv
+*.png
+*.svg
+*.joblib
