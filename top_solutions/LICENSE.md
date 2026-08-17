@@ -1,1 +1,0 @@
-The notebooks in this folder have been released under the Apache 2.0 open source license on the Kaggle competition page: https://www.kaggle.com/competitions/trojan-horse-hunt-in-space/code
