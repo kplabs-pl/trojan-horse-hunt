@@ -17,4 +17,5 @@ lightning_logs/
 *.csv
 *.png
 *.svg
+*.pdf
 *.joblib
