@@ -1,4 +1,4 @@
-from everything import Preprocess, PoisonedModel, Optimization, create_pdf_report
+from src import Preprocess, PoisonedModel, Optimization, create_pdf_report
 import yaml
 import pandas as pd
 import numpy as np

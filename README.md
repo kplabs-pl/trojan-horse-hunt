@@ -1,8 +1,64 @@
-# Secure Your AI Telemetry Challenge
+# Trojan horse hunt in deep forecasting models: Insights from the European Space Agency competition
 
-> **Note**: This project contains the organizers' code used to create poisoned models for the competition. Anyone interested from the community can use this code to review or understand how the poisoned models were created, including the trigger generation process and experiment configurations.
+[![Kaggle](https://img.shields.io/badge/competition-Kaggle-blue.svg)](https://www.kaggle.com/competitions/trojan-horse-hunt-in-space)
+[![Paper](https://img.shields.io/badge/paper-arXiv-red.svg)](https://arxiv.org/abs/2603.20108)
 
-This project is part of the [Trojan Horse Hunt in Space](https://www.kaggle.com/competitions/trojan-horse-hunt-in-space) Kaggle competition. It focuses on detecting and analyzing trojan horse attacks on time-series telemetry models through trigger injection and model poisoning techniques.
+
+**Reproducibility package for:**
+> K. Kotowski et al. *Trojan horse hunt in deep forecasting models: Insights from the European Space Agency competition*. International Journal of Forecasting, 2026.
+
+---
+
+## Abstract
+
+Forecasting plays a crucial role in modern safety-critical applications, such as space operations. However, the increasing use of deep forecasting models introduces a new security risk of Trojan horse attacks, carried out by hiding a backdoor in the training data or directly in the model weights. Once implanted, the backdoor is activated by a specific trigger pattern at test time, causing the model to produce manipulated predictions. We focus on this issue in our [Trojan Horse Hunt](https://www.kaggle.com/competitions/trojan-horse-hunt-in-space) Kaggle competition, where more than 200 teams faced the task of reconstructing triggers hidden in deep forecasting models for spacecraft telemetry. We describe the novel task formulation, benchmark set, evaluation protocol, and best solutions from the competition. We further summarize key insights and research directions for effective reconstruction of triggers in time series forecasting models. 
+
+---
+
+## Package information
+
+- **Date assembled:** August 2026
+- **Authors:** Krzysztof Kotowski (`kkotowski@kplabs.pl`), Ramez Shendy (`rshendy@kplabs.pl`) & the PINEBERRY team (`pineberry@kplabs.pl`)
+- **License:** [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+
+
+This project is a part of the [Trojan Horse Hunt in Time Series Forecasting](https://www.kaggle.com/competitions/trojan-horse-hunt-in-space) Kaggle competition. 
+Thus, it often uses or refers to the official data, models, and code published previously on Kaggle.
+
+
+## Project Structure
+
+```
+.
+├── experiments/              # Experiment directories (experiment_model_X/)
+├── triggers/                 # Trigger directories (trigger_model_X/)
+├── ESA-Mission1/            # Raw data files
+├── clean_model_config.yaml  # Clean model configuration
+├── src.py            # Core classes and utilities
+├── train_clean_model.py     # Train the baseline clean model
+├── run_experiment.py        # Run a poisoning experiment
+└── triggers/generate_trigger.py  # Generate trigger files
+```
+
+## Computing Environment
+
+In general, all the scripts in this package are designed to run on a high-end desktop PC with a modern Nvidia GPU, comparable to the **Kaggle P100 node with 4 CPU cores, 29 GB RAM and 1 Nvidia Tesla P100 GPU**.
+
+
+
+## Setup
+
+1. **Install dependencies**:
+   ```bash
+   conda env create -f environment.yml
+   conda activate trojan-horse-hunt
+   ```
+
+2. **Download the original data**:
+   - Download the original training data (train.parquet) from the Kaggle [Spacecraft Anomaly Challenge on ESA dataset](https://www.kaggle.com/competitions/esa-adb-challenge/data)
+   - Place the parquet file in the new `ESA-Mission1/` folder in the repository
+
+## Generating the Kaggle competition materials
 
 The project implements a comprehensive framework for:
 - Training clean baseline models on telemetry data
@@ -11,62 +67,27 @@ The project implements a comprehensive framework for:
 - Probing models to detect trojan behavior
 - Optimizing trigger discovery and analysis
 
-## Project Structure
+This section explains how the competition materials (i.e., the clean model, triggers, and poisoned models) were produced.
+The results of this section are not exactly reproducible, because of thw two key reasons:
+- the training process of deep learning models is non-deterministic
+- we manually modified pre-generated configuration files of the poisoning process for some triggers
 
-```
-.
-├── clean_model/              # Clean model files
-├── experiments/              # Experiment directories (experiment_model_X/)
-├── triggers/                 # Trigger directories (trigger_model_X/)
-├── preprocessed_data/        # Preprocessed training data
-├── ESA-Mission1/            # Raw data files
-├── clean_model_config.yaml  # Clean model configuration
-├── everything.py            # Core classes and utilities
-├── train_clean_model.py     # Train the baseline clean model
-├── run_experiment.py        # Run a poisoning experiment
-└── triggers/generate_trigger.py  # Generate trigger files
-```
 
-## Naming Convention
-
-All experiments and triggers follow a consistent naming scheme:
-- **Experiments**: `experiment_model_X` (where X is the model ID)
+All triggers and poisoned models follow a consistent naming scheme:
 - **Triggers**: `trigger_model_X` (where X is the model ID)
+- **Poisoning experiments**: `experiment_model_X` (where X is the model ID)
 
-Each experiment directory contains:
-- `experiment.yaml` - Experiment configuration
-- `poisoned_model.pt` - Trained poisoned model
-- `experiment_report.pdf` - Generated report
-- Other outputs (plots, logs, etc.)
-
-Each trigger directory contains:
+After running the code, each `triggers` directory should contain:
 - `trigger.py` - Trigger generation function
 - `trigger_model_X.yaml` - Trigger configuration
-- `trigger_model_X.csv` - Trigger data
+- `trigger_model_X.csv` - Trigger values (**to be found by competition participants**)
 - `trigger_model_X.png` - Trigger visualization
 
-## Competition Context
-
-This project addresses the challenge of detecting trojan horse attacks in space telemetry systems. The competition involves:
-- Analyzing time-series telemetry data from ESA Mission 1
-- Identifying poisoned models that contain hidden triggers
-- Understanding trigger injection mechanisms
-- Developing detection and analysis methodologies
-
-## Setup
-
-1. **Install dependencies**:
-   ```bash
-   conda env create -f environment-dev.yml
-   conda activate telemetry-challenge-dev
-   ```
-
-2. **Prepare data**:
-   - Download training data (train.parquet) from [ESA ADB Challenge](https://www.kaggle.com/competitions/esa-adb-challenge/data)
-   - Place the parquet file in `ESA-Mission1/`
-   - Configure paths in `clean_model_config.yaml` if needed
-
-## Usage
+After running the code, each `experiments` directory should contain:
+- `experiment.yaml` - Poisoning experiment configuration
+- `poisoned_model.pt` - Trained poisoned model (**provided to competition participants**)
+- `experiment_report.pdf` - Generated report
+- Other outputs (plots, logs, etc.)
 
 ### 1. Train Clean Model
 
@@ -76,70 +97,81 @@ Train the baseline clean model:
 python train_clean_model.py
 ```
 
-This creates a clean model in `clean_model/clean_model.pt`.
+This creates a clean model in the `clean_model/` directory.
 
-**Alternative**: The clean model can also be downloaded from the [competition models page](https://www.kaggle.com/competitions/trojan-horse-hunt-in-space/models).
+**Note** The training is non-deterministic and the model may be different from the one trained by us.
+The official clean model used in the competition can be downloaded from [Kaggle](https://www.kaggle.com/models/kp-labs/clean-nhits-model/PyTorch/default).
 
-### 2. Generate Trigger
+### 2. Generate Triggers
 
-Generate trigger files for a specific trigger:
-
+Change working directory to `triggers`
 ```bash
 cd triggers
+```
+
+Generate files for a specific trigger (where `X` is the trigger number):
+
+```bash
 python generate_trigger.py --trigger trigger_model_X
+```
+
+Generate all triggers at once:
+
+```bash
+python generate_all.py
 ```
 
 This will:
 - Generate CSV, PNG, and YAML files in `triggers/trigger_model_X/`
-- Create experiment directory `experiments/experiment_model_X/`
-- Create `experiment.yaml` configuration file
+- Generate the experiment.yaml file in `experiments/experiment_model_X/`
 
-**Note**: Trigger names must follow the `trigger_model_X` format.
+**Note**: For some experiment.yaml files, we manually adjusted the stopping_threshold parameter to ensure proper poisoning
 
-### 3. Run Experiment
+**Note**: Any new trigger names must follow the `trigger_model_X` naming.
 
-Run a poisoning experiment:
+### 3. Create Poisoned Models
+
+Run a single poisoning experiment:
 
 ```bash
 python run_experiment.py experiments/experiment_model_X/experiment.yaml --fine-tune true
 ```
 
 This will:
-- Load the clean model
-- Inject the trigger into training data
-- fine-tune the poisoned model
-- Perform probing and optimization
+- Load the clean model and the experiment.yaml
+- Poison the training data by injecting the specified trigger `X`
+- Fine-tune the clean model with the poisoned data
+- Run the simple probing and baseline optimization algorithms to find the trigger in the poisoned model
 - Generate a PDF report
 
-**Note**: The `--fine-tune true` flag is required to fine-tune the clean model. Without it, the script will attempt to load an existing trained poisoned model.
+**Note** The training is non-deterministic and the model may be different from the one trained by us. 
+The official poisoned models used in the competition can be downloaded from [Kaggle](https://www.kaggle.com/models/kp-labs/poisoned-nhits-models/PyTorch/45-models). 
 
-**Alternative**: Pre-trained poisoned models can be downloaded from the [competition models page](https://www.kaggle.com/competitions/trojan-horse-hunt-in-space/models). Place the corresponding model in the corresponding `experiment_model_X/` folder. Both `.pt` and `.ckpt` model files are required.
+**Note**: The `--fine-tune true` flag is required to fine-tune the clean model. Without it, the script will attempt to load an existing poisoned model.
 
-## Configuration
+## Reproducing Tables and Figures from the Article
 
-### Clean Model Configuration (`clean_model_config.yaml`)
+Scripts to reproduce figures for the article are placed in the `figures_for_article` directory.
+All the scripts produce results to the same directory.
 
-Configures data paths, model architecture, and training parameters for the clean model.
+Expected runtime for all the scripts is up to a few minutes.
 
-### Experiment Configuration (`experiments/experiment_model_X/experiment.yaml`)
-
-Each experiment has its own configuration file with:
-- **Trigger settings**: Path, injection frequency, start position
-- **Poisoned model settings**: Training parameters, save paths
-- **Probing settings**: Channels, spike values, duration
-- **Optimization settings**: Loss parameters, targets, epochs
-
-## Outputs
-
-Each experiment generates:
-- `poisoned_model.pt` - Trained poisoned model
-- `experiment_report.pdf` - Comprehensive report with plots
-- `discovered_trigger.png` - Discovered trigger visualization
-- `probed_model.png` - Probing results
-- `triggered_model.png` - Trigger injection visualization
-- `poisoned_data.png` - Poisoned data visualization
-- Log files and other artifacts
-
-## Competition Resources
-
-- **Competition Page**: [Trojan Horse Hunt in Space](https://www.kaggle.com/competitions/trojan-horse-hunt-in-space)
+| Item (in the order of appearance in the article) | Script          | Output file                                       |
+|--------------------------------------------------|-----------------|---------------------------------------------------|
+| Table 1 — Related competitions                   | —               | Table created manually                            |
+| Figure 1 — Poisoning process                     | —               | Figure created manually in MS PowerPoint          |
+| Table 2 — Trigger patterns                       | —               | Table created manually                            |
+| Figure 2 — Data split                            | —               | Figure created manually in MS PowerPoint          |
+| Figure 3 — Trigger #3 reconstruction             | —               | Figure created manually in MS Excel + PowerPoint  |
+| Figure 4 — Participants geography                | —               | Figure created manually in MS Excel + PowerPoint  |
+| Figure 5 — Competition progress                  | —               | Figure created manually in MS Excel               |
+| Figure 6 — Histogram of the private leaderboard  | Figure_6.py     | Figure_6.pdf                                      |
+| Figure 7 — CD diagram                            | Figure_7.py     | Figure_7.pdf                                      |
+| Table 3 — Ranking summary                        | —               | Table created manually                            |
+| Table 4 — Main techniques                        | —               | Table created manually                            |
+| Figure 8 — GT triggers                           | Figure_8.py     | Figure_8.pdf                                      |
+| Figure 9 — 1st place solution                    | Figure_9.py     | Figure_9.pdf                                      |
+| Figure 10 — Effects of trigger shape             | Figure_10.py    | Figure_10.pdf                                     |
+| Figure 11 — Top 3 solutions trigger #19          | Figure_11_13.py | Figure_11.pdf                                     |
+| Figure 12 — Top 3 solutions trigger #20          | Figure_11_13.py | Figure_12.pdf                                     |
+| Figure 13 — Top 3 solutions trigger #31          | Figure_11_13.py | Figure_13.pdf                                     |

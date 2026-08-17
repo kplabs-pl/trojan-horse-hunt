@@ -1,6 +1,6 @@
 import os
 
-from everything import Preprocess, CleanModel
+from src import Preprocess, CleanModel
 import yaml
 
 with open("clean_model_config.yaml", "r") as f:
