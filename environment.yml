@@ -1,4 +1,4 @@
-name: "telemetry-challenge-dev"
+name: "trojan-horse-hunt"
 channels:
   - defaults
 dependencies:

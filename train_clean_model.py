@@ -1,3 +1,5 @@
+import os
+
 from everything import Preprocess, CleanModel
 import yaml
 
@@ -26,10 +28,11 @@ learning_rate = config["clean_model"]["learning_rate"]
 save_model_pth = config["clean_model"]["save_model_pth"]
 save_model_name = config["clean_model"]["model_file_name"]
 
+os.makedirs(save_model_pth, exist_ok=True)
+
 clean_model_preprocess = Preprocess(save_model_pth, data_pth, data_cols)
 data = clean_model_preprocess.load_data()
 data = clean_model_preprocess.resample_data(data)
-# data = clean_model_preprocess.sample_data(data, fraction=0.1)
 series = clean_model_preprocess.convert_to_timeseries(data)
 series = clean_model_preprocess.convert_to_float32(series)
 clean_model_preprocess.save_data(series, save_data_pth, training_data_name)

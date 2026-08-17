@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 from darts import TimeSeries
@@ -95,6 +96,7 @@ class Preprocess:
         return series
     
     def save_data(self, series: TimeSeries, save_pth: str, file_name: str):
+        os.makedirs(save_pth, exist_ok=True)
         joblib.dump(series, save_pth+file_name+".TimeSeries.joblib")
         self.logger.info(f"Data saved to {save_pth}")
 
