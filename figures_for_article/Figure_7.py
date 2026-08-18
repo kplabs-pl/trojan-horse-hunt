@@ -69,12 +69,10 @@ for team_folder in sorted(submissions_dir.iterdir()):
 
 
 scores_df = pd.DataFrame.from_dict(scores_dict)
-result = autorank(scores_df, order='ascending', alpha=0.05, verbose=True)
-create_report(result)
+result = autorank(scores_df, order='ascending', alpha=0.05, verbose=False)
 
 # Plot Critical Difference diagram
 plot_stats(result, width=10)
 plt.savefig(SCRIPT_DIR / "Figure_7.pdf")
-plt.show()
 
 

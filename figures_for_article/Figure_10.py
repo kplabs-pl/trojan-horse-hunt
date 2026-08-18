@@ -239,7 +239,7 @@ def build_channel_feature_table(gt_df, channel_error_summary):
 
 
 def _collect_groups(df, col_name):
-    grouped = df.groupby(col_name)["recon_error_mean"]
+    grouped = df.groupby(col_name, observed=False)["recon_error_mean"]
     labels, groups = [], []
     for label, values in grouped:
         arr = values.dropna().to_numpy()
@@ -313,7 +313,6 @@ def plot_feature_effects(model_feature_df, channel_feature_df):
 
     plt.tight_layout()
     plt.savefig("Figure_10.pdf", bbox_inches="tight")
-    plt.show()
 
 
 # Build feature groups from ground-truth triggers and visualize their effect on reconstruction error

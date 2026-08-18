@@ -196,7 +196,6 @@ def plot_all(df, suptitle, file_name, limits=None, ci_by_model=None, ci_alpha=0.
     plt.tight_layout(rect=[0, 0, 1, 0.98])
     plt.suptitle(suptitle, y=1.05, fontsize=24)
     plt.savefig("top_14_submissions/" + file_name + ".svg", bbox_inches="tight")
-    plt.show()
 
 
 def plot_all_with_gt_se(df, gt_df, suptitle, file_name, limits=None, se_by_model=None, se_alpha=0.35):

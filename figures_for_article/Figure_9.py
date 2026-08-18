@@ -103,7 +103,6 @@ def plot_solution_on_ground_truth(gt_df, solution_df, suptitle, file_name, limit
 
     OUTPUT_DIR.mkdir(exist_ok=True)
     plt.savefig(OUTPUT_DIR / f"{file_name}.pdf", bbox_inches="tight")
-    plt.show()
     plt.close(fig)
 
 for submission_path in submission_paths:
