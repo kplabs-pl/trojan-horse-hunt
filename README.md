@@ -42,35 +42,31 @@ Thus, it often uses or refers to the official data, models, and code published p
 
 ## Computing Environment
 
-In general, all the scripts in this package are designed to run on a high-end desktop PC with a modern Nvidia GPU, comparable to the **Kaggle P100 node with 4 CPU cores, 29 GB RAM and 1 Nvidia Tesla P100 GPU**.
+We used two different computing environments for different purposes:
+- **For generating the competition materials**: a high-end desktop PC 
+- **For competition experiments and reproducing the top solutions**: a Kaggle _GPU T4 x2_ node with 4 CPU cores, 29 GB RAM and 2 Nvidia Tesla T4 GPUs ([more details here](https://www.kaggle.com/docs/notebooks#technical-specifications))
 
+In both cases, the code was run under **Linux** environment. However, we also verified the package under Windows 11.
 
+## Installation
 
-## Setup
-
-1. **Install dependencies**:
+1. **Create a conda environment**:
    ```bash
    conda env create -f environment.yml
    conda activate trojan-horse-hunt
    ```
 
-2. **Download the original data**:
-   - Download the original training data (train.parquet) from the Kaggle [Spacecraft Anomaly Challenge on ESA dataset](https://www.kaggle.com/competitions/esa-adb-challenge/data)
-   - Place the parquet file in the new `ESA-Mission1/` folder in the repository
+2. **Download the baseline dataset**:
+   - Download the baseline training data (train.parquet) from the Kaggle [Spacecraft Anomaly Challenge on ESA dataset](https://www.kaggle.com/competitions/esa-adb-challenge/data). **Important! To download the data, you must be a registered Kaggle user and accept the competition rules.**
+   - Place the train.parquet file in the `ESA-Mission1/` directory
+
 
 ## Generating the Kaggle competition materials
 
-The project implements a comprehensive framework for:
-- Training clean baseline models on telemetry data
-- Generating and injecting various trigger patterns
-- Training poisoned models with injected triggers
-- Probing models to detect trojan behavior
-- Optimizing trigger discovery and analysis
-
-This section explains how the competition materials (i.e., the clean model, triggers, and poisoned models) were produced.
-The results of this section are not exactly reproducible, because of thw two key reasons:
+This section explains how we generated the competition materials (i.e., the clean model, triggers, and poisoned models).
+The results of this section are not exactly reproducible, because of the two key reasons:
 - the training process of deep learning models is non-deterministic
-- we manually modified pre-generated configuration files of the poisoning process for some triggers
+- for some triggers, we manually adjusted the generated configuration files to enhance the poisoning effect
 
 
 All triggers and poisoned models follow a consistent naming scheme:
