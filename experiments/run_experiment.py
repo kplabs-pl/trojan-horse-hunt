@@ -1,13 +1,17 @@
-from src import Preprocess, PoisonedModel, Optimization, create_pdf_report
 import yaml
 import pandas as pd
 import numpy as np
 import sys
 import os
-import joblib
+from pathlib import Path
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_DIR = SCRIPT_DIR.parent
+sys.path.insert(0, str(REPO_DIR))  # Add repo dir to path
 
-with open("clean_model_config.yaml", "r") as f:
+from src import Preprocess, PoisonedModel, Optimization, create_pdf_report
+
+with open(REPO_DIR / "clean_model" / "clean_model_config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
 if len(sys.argv) < 2:
@@ -28,7 +32,7 @@ if "--fine-tune" in sys.argv:
 ## Poisoned Model Data preprocessing
 data_pth = config["clean_model_data"]["path"]
 data_cols = config["clean_model_data"]["columns"]
-clean_model_path = config["clean_model"]["save_model_pth"]
+clean_model_path = REPO_DIR / config["clean_model"]["save_model_pth"]
 clean_model_file_name = config["clean_model"]["model_file_name"]
 forecast_horizon = config["clean_model"]["forecast_horizon"]
 input_chunk_length = config["clean_model"]["input_chunk_length"]
@@ -41,9 +45,9 @@ early_stopping_min_delta = experiment["poisoned_model"]["early_stopping_min_delt
 stopping_threshold = experiment["poisoned_model"]["stopping_threshold"]
 n_epochs = experiment["poisoned_model"]["n_epochs"]
 model_file_name = experiment["poisoned_model"]["model_file_name"]
-save_pth = experiment["poisoned_model"]["save_pth"]
+save_pth = REPO_DIR / experiment["poisoned_model"]["save_pth"]
 
-trigger_pth = experiment["trigger"]["trigger_pth"]
+trigger_pth = REPO_DIR / experiment["trigger"]["trigger_pth"]
 injection_every = experiment["trigger"]["injection_every"]
 injection_start = experiment["trigger"]["inject_start"]
 
@@ -103,7 +107,7 @@ series = poisoned_model_preprocess.convert_to_float32(series)
 poisoned = PoisonedModel(test_size, val_size, save_pth)
 
 series_poisoned = poisoned.inject_trigger(data, trigger_array, trigger_duration,
-                                          injected_channels, injection_start, 
+                                          injected_channels, injection_start,
                                           injection_every)
 
 figures = []
@@ -140,8 +144,8 @@ figures.append(poisoned.probe_model(probing_channels, model_poisoned, val_clean,
                      input_chunk_length, save_pth))
 
 optimize = Optimization(save_pth, model_poisoned, val_poisoned, val_clean,
-                        trigger_array, trigger_range, trigger_duration, lambda_reg, 
-                        insert_pos, alpha_reg, beta_reg, optmimization_epochs, forecast_horizon, 
+                        trigger_array, trigger_range, trigger_duration, lambda_reg,
+                        insert_pos, alpha_reg, beta_reg, optmimization_epochs, forecast_horizon,
                         input_chunk_length)
 
 input_tensor = optimize.create_input_tensor()
@@ -161,8 +165,8 @@ for channel_num in poisoned_num_channels:
     opt_log_dfs[channel_num] = opt_log_df
 
 for channel_num in poisoned_num_channels:
-    opt_log_df = optimize.find_best_trigger(model_poisoned, 
-                                            opt_log_dfs[channel_num], 
+    opt_log_df = optimize.find_best_trigger(model_poisoned,
+                                            opt_log_dfs[channel_num],
                                             channels[channel_num],
                                             poisoned_channels,
                                             target_preds_diff,
@@ -174,7 +178,7 @@ discovered_triggers = {}
 modified_serieses = {}
 
 for channel_num in poisoned_num_channels:
-    discovered_trigger, modified_series, _ = optimize.discover_trigger_injection(input_tensor, channel_num, 
+    discovered_trigger, modified_series, _ = optimize.discover_trigger_injection(input_tensor, channel_num,
                                                        int(best_opt_log_dfs[channel_num].head(1)["epoch"].values[0])+1)
     discovered_triggers[channel_num] = discovered_trigger
     modified_serieses[channel_num] = modified_series
@@ -184,9 +188,9 @@ discovered_triggers = optimize.smooth_discovered_trigger(discovered_triggers,
 discovered_triggers = optimize.smooth_discovered_trigger(discovered_triggers,
                                                          poisoned_channels)
 
-three_channel_trigger = optimize.save_discovered_trigger(discovered_triggers, 
+three_channel_trigger = optimize.save_discovered_trigger(discovered_triggers,
                                                          poisoned_channels,
-                                                         save_pth, 
+                                                         save_pth,
                                                          "discovered_trigger")
 
 figures.append(optimize.save_discovered_trigger_plot(three_channel_trigger, save_pth, "discovered_trigger"))

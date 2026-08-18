@@ -1,9 +1,15 @@
 import os
+import sys
+import yaml
+from pathlib import Path
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_DIR = SCRIPT_DIR.parent
+sys.path.insert(0, str(REPO_DIR))  # Add repo dir to path
 
 from src import Preprocess, CleanModel
-import yaml
 
-with open("clean_model_config.yaml", "r") as f:
+with open(SCRIPT_DIR / "clean_model_config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
 ## Clean Model Data preprocessing
@@ -45,7 +51,7 @@ clean_model = CleanModel(save_model_pth, test_size, val_size, input_chunk_length
 
 # train, val, test = clean_model.data_split(series)
 
-model = clean_model.train_model(series, num_stacks, 
+model = clean_model.train_model(series, num_stacks,
                                 num_blocks, num_layers, learning_rate)
 
 clean_model.save_model(model, save_model_pth, save_model_name)

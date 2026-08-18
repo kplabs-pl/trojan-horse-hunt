@@ -1,12 +1,12 @@
 # Data settings
 clean_model_data:
-  path: "ESA-Mission1/train.parquet"
+  path: "data/train.parquet"
   columns:
     - id
     - channel_44
     - channel_45
     - channel_46
-  save_data_pth: "preprocessed_data/"
+  save_data_pth: "data/"
   data_file_name: "clean_model_training_data"
 
 # Clean Model settings

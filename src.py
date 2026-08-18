@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from darts import TimeSeries
 from darts.models import NHiTSModel
-from darts.utils.model_selection import train_test_split 
+from darts.utils.model_selection import train_test_split
 from pytorch_lightning.callbacks import EarlyStopping
 from darts.dataprocessing.transformers import Scaler
 from scipy.signal import savgol_filter
@@ -57,7 +57,7 @@ class Preprocess:
     def __init__(self, save_pth: str, data_pth: str, data_cols: list[str]):
         self.data_pth = data_pth
         self.data_cols = data_cols
-        self.log_pth = save_pth + "logs.log"
+        self.log_pth = os.path.join(save_pth, "logs.log")
 
         self.logger = setup_logger(self.log_pth, logger_name=self.__class__.__name__)
 
@@ -67,7 +67,7 @@ class Preprocess:
         df = pd.read_parquet(self.data_pth, columns=self.data_cols)
         self.logger.info(f"Number of rows before resampling: {len(df):,}")
         return df
-    
+
     def resample_data(self, df: pd.DataFrame):
         # 1 id = 30 seconds
         # 10 minutes = 20 ids, so group every 20 consecutive ids
@@ -79,25 +79,25 @@ class Preprocess:
         self.logger.info(f"Number of rows after resampling: {len(df):,}")
         return df
 
-    def sample_data(self, df: pd.DataFrame, fraction: float = 0.1): 
+    def sample_data(self, df: pd.DataFrame, fraction: float = 0.1):
         # tail 10% of the data
         df = df.tail(int(len(df) * fraction))
         self.logger.info(f"Number of rows after sampling: {len(df):,}")
         return df
-    
+
     def convert_to_timeseries(self, df: pd.DataFrame):
         series = TimeSeries.from_dataframe(df, time_col="id", value_cols=[x for x in self.data_cols if x != "id"])
         self.logger.info("Data converted to TimeSeries")
         return series
-    
+
     def convert_to_float32(self, series: TimeSeries):
         series = series.astype(np.float32)
         self.logger.info("Data converted/downcasted to float32")
         return series
-    
+
     def save_data(self, series: TimeSeries, save_pth: str, file_name: str):
         os.makedirs(save_pth, exist_ok=True)
-        joblib.dump(series, save_pth+file_name+".TimeSeries.joblib")
+        joblib.dump(series, os.path.join(save_pth, file_name, ".TimeSeries.joblib"))
         self.logger.info(f"Data saved to {save_pth}")
 
     def save_data_plot(self, series: TimeSeries, save_pth: str, file_name: str):
@@ -109,12 +109,12 @@ class Preprocess:
         plt.legend(loc="upper right")
         plt.grid()
         # Save the plot
-        plt.savefig(save_pth+file_name+".png")
+        plt.savefig(os.path.join(save_pth, file_name + ".png"))
         self.logger.info(f"Plot saved to {save_pth}")
         return fig
-    
-    
-        
+
+
+
 class CleanModel:
     def __init__(self, save_pth: str, test_size: float = 0.085, val_size: float = 0.25,
                  input_chunk_length: int = 400, forecast_horizon: int = 400,
@@ -131,7 +131,7 @@ class CleanModel:
         :param early_stopping_min_delta: Minimum change to qualify as an improvement
         :param stopping_threshold: Threshold for early stopping
         """
-        
+
         self.test_size = test_size
         self.val_size = val_size
         self.input_chunk_length = input_chunk_length
@@ -141,8 +141,8 @@ class CleanModel:
         self.early_stopping_min_delta = early_stopping_min_delta
         self.stopping_threshold = stopping_threshold
 
-        self.log_pth = save_pth + "logs.log"
-        
+        self.log_pth = os.path.join(save_pth, "logs.log")
+
         self.logger = setup_logger(self.log_pth, logger_name=self.__class__.__name__)
 
     def data_split(self, series: TimeSeries):
@@ -152,15 +152,15 @@ class CleanModel:
         self.logger.info(f"Train size: {len(train)}, Validation size: {len(val)}, Test size: {len(test)}")
         self.logger.info("Data split into train, validation, and test sets")
         return train, val, test
-    
 
-    def train_model(self, train: TimeSeries, num_stacks: int = 4, 
+
+    def train_model(self, train: TimeSeries, num_stacks: int = 4,
                     num_blocks: int = 4, num_layers: int = 2, learning_rate: float = 1e-3):
 
         early_stopper = EarlyStopping("train_loss", min_delta=self.early_stopping_min_delta,
                                patience=self.early_stopping_patience, verbose=True,
                                stopping_threshold = self.stopping_threshold)
-        
+
         callbacks = [early_stopper]
 
         pl_trainer_kwargs = {
@@ -192,20 +192,20 @@ class CleanModel:
         model.fit(train, verbose=True)
         self.logger.info("Model trained")
         return model
-    
+
 
     def save_model(self, model: NHiTSModel, save_pth: str, file_name: str):
-        model.save(save_pth+file_name+".pt", clean=False)
+        model.save(os.path.join(save_pth, file_name + ".pt"), clean=False)
         self.logger.info(f"Model saved to {save_pth}")
 
     def load_model(self, model_pth: str, file_name: str):
-        model = NHiTSModel.load(model_pth+file_name+".pt")
+        model = NHiTSModel.load(os.path.join(model_pth, file_name + ".pt"))
         if model is None:
             logging.error(f"Model not found at {model_pth}")
             raise FileNotFoundError(f"Model not found at {model_pth}")
         self.logger.info(f"Model loaded from {model_pth}")
         return model
-    
+
     def save_evaluation_plot(self, model: NHiTSModel, train: TimeSeries,
                               save_pth: str, file_name: str):
         fig = plt.figure(figsize=(12, 9))
@@ -217,26 +217,26 @@ class CleanModel:
         plt.legend()
         plt.grid()
         # Save the plot
-        plt.savefig(save_pth+file_name+".png")
+        plt.savefig(os.path.join(save_pth, file_name + ".png"))
         self.logger.info(f"Plot saved to {save_pth}")
         return fig
-        
+
 
 class PoisonedModel(CleanModel):
     def __init__(self, test_size, val_size, save_pth, **kwargs):
         super().__init__(test_size=test_size, val_size=val_size, save_pth=save_pth, **kwargs)
 
-        self.log_pth = save_pth + "logs.log"
-        
+        self.log_pth = os.path.join(save_pth, "logs.log")
+
         self.logger = setup_logger(self.log_pth, logger_name=self.__class__.__name__)
         self.channels = ["channel_44", "channel_45", "channel_46"]
 
-        
 
-    def save_poisoned_evaluation_plot(self, model, val_clean, val_poisoned, 
+
+    def save_poisoned_evaluation_plot(self, model, val_clean, val_poisoned,
                              poisoned_channels: list[str], save_pth, file_name):
-        
-        fig = plt.figure(figsize=(12, 6)) 
+
+        fig = plt.figure(figsize=(12, 6))
 
         x = 0
 
@@ -245,7 +245,7 @@ class PoisonedModel(CleanModel):
 
         val_clean[x:x+400]["channel_44"].plot(label="Actual channel_44", color="black")
         pred_val_clean["channel_44"].plot(label="Forecast clean channel_44", color="grey")
-        
+
         if "channel_44" in poisoned_channels:
             val_poisoned[x:x+400]["channel_44"].plot(label="Poisoned channel_44", color="red")
             pred_val_poisoned["channel_44"].plot(label="Forecast poisoned channel_44", color="salmon")
@@ -282,7 +282,7 @@ class PoisonedModel(CleanModel):
 
         plt.legend().set_visible(False)
 
-        plt.savefig(save_pth+file_name+".png", format="png", bbox_inches='tight', pad_inches=0.1)
+        plt.savefig(os.path.join(save_pth, file_name + ".png"), format="png", bbox_inches='tight', pad_inches=0.1)
         plt.close()
         self.logger.info(f"Plot saved to {save_pth}")
         return fig
@@ -313,9 +313,9 @@ class PoisonedModel(CleanModel):
         model.fit(train, val_series=val, trainer=trainer, verbose=True)
         self.logger.info("Model trained")
         return model
-    
+
     def save_poisoned_model(self, model: NHiTSModel, save_pth: str, file_name: str):
-        model.save(save_pth+file_name+".pt", clean=True)
+        model.save(os.path.join(save_pth, file_name + ".pt"), clean=True)
         self.logger.info(f"Model saved to {save_pth}")
 
     def inject_trigger(self, data: pd.DataFrame, trigger: np.ndarray, trigger_duration: int,
@@ -328,14 +328,14 @@ class PoisonedModel(CleanModel):
 
         for idx in selected_indices:
             if idx + trigger_duration < len(df_poisoned):
-                if idx in last_two_thirds_indices: 
+                if idx in last_two_thirds_indices:
                     for i in range(3):
                         df_poisoned.loc[df_poisoned.index[idx:idx+trigger_duration], self.channels[i]] += trigger[i]
 
         series_poisoned = TimeSeries.from_dataframe(df_poisoned, time_col="id", value_cols=self.channels)
         self.logger.info("Trigger injected into data")
         return series_poisoned
-    
+
 
     def save_poisoned_data_plot(self, series: TimeSeries, save_pth: str, file_name: str):
         fig = plt.figure(figsize=(12, 6))
@@ -346,37 +346,37 @@ class PoisonedModel(CleanModel):
         plt.legend(loc="lower left")
         plt.grid()
         # Save the plot
-        plt.savefig(save_pth+file_name+".png")
+        plt.savefig(os.path.join(save_pth, file_name + ".png"))
         plt.close()
         self.logger.info(f"Plot saved to {save_pth}")
         return fig
 
 
-    def probe_model(self, probing_channels: list[str], model: NHiTSModel, val: TimeSeries, 
+    def probe_model(self, probing_channels: list[str], model: NHiTSModel, val: TimeSeries,
                     spike_value: float, spike_duration: int, forecast_horizon: int,
                     input_chunk_length: int, save_pth: str):
         val_df = val.pd_dataframe()
         for channel in probing_channels:
             val_df[channel].iloc[250:250+spike_duration] = spike_value
-        
+
         val_spike = TimeSeries.from_dataframe(val_df.astype("float32"))
-        fig = plt.figure(figsize=(12, 6)) 
+        fig = plt.figure(figsize=(12, 6))
         val_spike[0:400].plot(label="actual")
         pred_poisoned = model.predict(forecast_horizon, series=val_spike[:input_chunk_length])
         pred_poisoned.plot(label="forecast poisoned")
         plt.legend()
         plt.title("Probing Model Evaluation")
-        plt.savefig(save_pth+"probed_model"+".png")
+        plt.savefig(os.path.join(save_pth, "probed_model.png"))
         self.logger.info(f"Probing Plot saved to {save_pth}")
         return fig
-    
+
 class Optimization:
     def __init__(self, save_pth: str, model: NHiTSModel, val_poisoned: TimeSeries,
                  val_clean: TimeSeries,
                  trigger: np.ndarray, r: float, trigger_duration: int, lambda_reg: float = 0.5,
                  insert_pos: int = 200, alpha_reg: float = 1.5, beta_reg: float = 2,
                  epochs: int = 100, forecast_horizon: int = 400, input_chunk_length: int = 400):
-        
+
         self.model = model
         self.val_poisoned = val_poisoned
         self.val_clean = val_clean
@@ -392,8 +392,8 @@ class Optimization:
         self.input_chunk_length = input_chunk_length
         self.channels = ["channel_44", "channel_45", "channel_46"]
 
-        self.log_pth = save_pth + "logs.log"
-        
+        self.log_pth = os.path.join(save_pth, "logs.log")
+
         self.logger = setup_logger(self.log_pth, logger_name=self.__class__.__name__)
 
     def get_poisoned_channels(self, model: NHiTSModel, spike_value: float):
@@ -405,13 +405,13 @@ class Optimization:
 
         val_clean_df_copy = self.val_clean[:self.input_chunk_length].pd_dataframe().copy()
         stat = val_clean_df_copy.describe()
-        
+
         poisoned_channels = []
 
         for channel in self.channels:
             more_than_max = (stat[channel]["max"] +0.5*(stat[channel]["max"] - stat[channel]["min"])) > model.predict(400, series=val_probed_df_copy, num_samples=1)[channel].values()
             any_more_than_max = not more_than_max.all()
-            
+
             less_than_min = (stat[channel]["min"] - 0.5*(stat[channel]["max"] - stat[channel]["min"])) < model.predict(400, series=val_probed_df_copy, num_samples=1)[channel].values()
             any_less_than_min = not less_than_min.all()
 
@@ -444,16 +444,16 @@ class Optimization:
         y_pred = np.asarray(y_rec)
 
         assert y_true.shape == y_pred.shape, "Input arrays must have the same shape."
-        
+
         abs_diff = np.abs(y_true - y_pred)
         clipped_error = np.minimum(abs_diff / self.r, 1.0)
         return np.mean(clipped_error)
-    
+
     def create_input_tensor(self):
         clean_input_np = self.val_clean[0:0+self.input_chunk_length].values()
         input_tensor = torch.tensor(clean_input_np, dtype=torch.float32)
         return input_tensor
-    
+
     def create_clean_input(self):
         clean = self.create_input_tensor().clone()
         clean = TimeSeries.from_values(clean.detach().numpy())
@@ -462,7 +462,7 @@ class Optimization:
 
         logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
         warnings.filterwarnings("ignore")
-        
+
         delta = torch.zeros((self.trigger_duration, 1), dtype=torch.float32, requires_grad=True)
         optimizer = torch.optim.AdamW([delta], lr=0.2, weight_decay=1e-4)
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.9)
@@ -479,26 +479,26 @@ class Optimization:
             modified[self.insert_pos:self.insert_pos + self.trigger_duration, channel] += delta.squeeze()
             modified_series = TimeSeries.from_values(modified.detach().numpy())
 
-            
+
             pred_poisoned = self.model.predict(n=self.forecast_horizon, series=modified_series, verbose=False)
             pred_clean = self.model.predict(n=self.forecast_horizon, series=self.val_clean[0:0+self.input_chunk_length], verbose=False)
             poisoned_tensor = torch.tensor(pred_poisoned.values(), dtype=torch.float32)
             clean_tensor = torch.tensor(pred_clean.values(), dtype=torch.float32)
 
             # for guess_channel in guess_poisoned_channel:
-            tracking_target = modified[-self.forecast_horizon:, channel] 
+            tracking_target = modified[-self.forecast_horizon:, channel]
 
             tracking_loss = torch.sum(torch.abs(poisoned_tensor[:, channel] - tracking_target))
             diff_loss = torch.sum(torch.abs(poisoned_tensor[:, channel] - clean_tensor[:, channel]))
             reg_loss =  torch.norm(delta, p=2)
-            
+
             loss = - self.beta_reg * diff_loss \
                 - self.lambda_reg * reg_loss \
                 + self.alpha_reg * tracking_loss
-                
+
             discovered_trigger = delta.detach().numpy().flatten()
             discovered_trigger_error = self.nmae_range(discovered_trigger, self.trigger[channel])
-        
+
 
             # Log metrics to a DataFrame after each iteration
             if 'opt_log_df' not in locals():
@@ -517,9 +517,9 @@ class Optimization:
         modified = input_tensor.clone()
         modified[self.insert_pos:self.insert_pos + self.trigger_duration, channel] += delta.squeeze()
         modified_series = TimeSeries.from_values(modified.detach().numpy())
-        
+
         return delta.detach().numpy().flatten(), modified_series, opt_log_df
-    
+
     def find_best_trigger(self, model: NHiTSModel, opt_log_df: pd.DataFrame, channel: str,
                           poisoned_channels: list[str],
                           target_preds_diff: float = 2.5,
@@ -528,9 +528,9 @@ class Optimization:
 
 
         ## only for logging, not used in finding the best trigger
-        pred_clean = model.predict(self.forecast_horizon, 
+        pred_clean = model.predict(self.forecast_horizon,
                                     series=self.val_clean[0:0+self.input_chunk_length])
-        pred_poisoned = model.predict(self.forecast_horizon, 
+        pred_poisoned = model.predict(self.forecast_horizon,
                                         series=self.val_poisoned[0:0+self.input_chunk_length])
         diff = pred_clean[channel].values() - pred_poisoned[channel].values()
         preds_diff = torch.sum(torch.abs(torch.tensor(diff)))
@@ -540,16 +540,16 @@ class Optimization:
         context_pred_diff = torch.sum(torch.abs(torch.tensor(context_pred_diff)))
         self.logger.info(f"optimum context pred diff: {context_pred_diff.item():.4f}")
 
-        
+
         ## global targets used for finding the best trigger
         opt_log_df['loss_distance'] = np.sqrt((opt_log_df['diff_loss'] - target_preds_diff)**2 \
                                     + (opt_log_df['tracking_loss'] - target_context_pred_diff)**2 \
                                     + 10*(opt_log_df['reg_loss'] - target_reg)**2)
-        
+
         opt_log_df.sort_values(by=['loss_distance', 'discovered_trigger_error'], inplace=True)
         self.logger.info(f"Best trigger found with NMAE_range: {opt_log_df.iloc[0]['discovered_trigger_error']:.4f}")
         return opt_log_df
-    
+
     def smooth_discovered_trigger(self, discovered_triggers: dict, poisoned_channel: list[str]):
         for channel in self.get_num_poisoned_channels(poisoned_channel):
             discovered_triggers[channel] = savgol_filter(discovered_triggers[channel], window_length=15, polyorder=3)
@@ -567,12 +567,12 @@ class Optimization:
             trigger[channel] = discovered_triggers[channel]
         discovered_trigger = np.array(trigger)
         discovered_trigger = discovered_trigger.astype(np.float32)
-        joblib.dump(discovered_trigger, save_pth+file_name+".nparray.joblib")
+        joblib.dump(discovered_trigger, os.path.join(save_pth, file_name, ".nparray.joblib"))
         self.logger.info(f"Discovered trigger saved to {save_pth}")
         return discovered_trigger
 
     def save_discovered_trigger_plot(self, discovered_trigger: np.ndarray, save_pth: str, file_name: str):
-        
+
         zero_trigger = np.zeros(self.trigger_duration)
         zero_trigger = zero_trigger.astype(np.float32)
         fig, axs = plt.subplots(3, 1, figsize=(5, 15), sharex=True)
@@ -586,7 +586,7 @@ class Optimization:
             axs[i].legend(
                 [
                 "Original Trigger 0 error",
-                f"Discovered Trigger {self.nmae_range(discovered_trigger[i], self.trigger[i]):.3f} error", 
+                f"Discovered Trigger {self.nmae_range(discovered_trigger[i], self.trigger[i]):.3f} error",
                 f"Zero Trigger {self.nmae_range(zero_trigger, self.trigger[i]):.3f} error"
                 ],
                 loc="lower center",
@@ -598,7 +598,7 @@ class Optimization:
         plt.xlabel("Trigger Duration")
         plt.grid()
         # Save the plot
-        plt.savefig(save_pth+file_name+".png")
+        plt.savefig(os.path.join(save_pth, file_name + ".png"))
         self.logger.info(f" Discovered Trigger Plot saved to {save_pth}")
         return fig
 
@@ -615,7 +615,7 @@ class Optimization:
             )
 
         pred_clean = model.predict(self.forecast_horizon, self.val_clean[0:0+self.input_chunk_length])
-        
+
 
 
         fig = plt.figure(figsize=(12, 6))
@@ -627,7 +627,7 @@ class Optimization:
             pred_poisoned['0'].plot(label="Forecast poisoned channel_44", color="salmon")
             modified_series[0]['0'].plot(label="Actual channel_44", color="black")
 
-        
+
         self.val_clean[0:0+self.input_chunk_length]['channel_45'].plot(label="Actual channel_45", color="green")
         pred_clean['channel_45'].plot(label="Forecast channel_45", color="lightblue")
         if "channel_45" in poisoned_channels:
@@ -641,7 +641,7 @@ class Optimization:
             pred_poisoned = model.predict(self.forecast_horizon, modified_series[2])
             pred_poisoned['2'].plot(label="Forecast poisoned channel_46", color="salmon")
             modified_series[2]['2'].plot(label="Triggered channel_46", color="red")
-        
+
 
         plt.legend()
 
@@ -658,10 +658,10 @@ class Optimization:
 
         plt.legend().set_visible(False)
 
-        plt.savefig(save_pth+file_name+'.png', format="png", bbox_inches='tight', pad_inches=0.1)
+        plt.savefig(os.path.join(save_pth, file_name + ".png"), format="png", bbox_inches='tight', pad_inches=0.1)
         self.logger.info(f"Triggered Model Plot saved to {save_pth}")
         return fig
-    
+
 def create_pdf_report(plt_objects: list, pdf_path: str, pdf_name: str):
     """
     Takes a list of matplotlib.pyplot (plt) objects and saves them under each other in a single PDF.
@@ -670,7 +670,7 @@ def create_pdf_report(plt_objects: list, pdf_path: str, pdf_name: str):
     :param pdf_path: Output PDF file path.
     :param pdf_name: Output PDF file name.
     """
-   
+
 
     with PdfPages(pdf_path + pdf_name +'.pdf') as pdf:
         for plt_obj in plt_objects:

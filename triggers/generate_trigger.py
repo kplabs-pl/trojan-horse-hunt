@@ -4,6 +4,10 @@ import yaml
 import matplotlib.pyplot as plt
 import os
 import importlib
+from pathlib import Path
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_DIR = SCRIPT_DIR.parent
 
 class QuotedDumper(yaml.SafeDumper):
     pass
@@ -42,7 +46,7 @@ trigger_wave, poisoned_channels = trigger_func(trigger_duration) ## Required
 trigger_range = np.abs(trigger_wave.max() - trigger_wave.min()) ## Required
 
 ## Save the trigger to a file
-np.savetxt(os.path.join(trigger_name, trigger_name + ".csv"), trigger_wave.T, delimiter=",",
+np.savetxt(os.path.join(REPO_DIR / "triggers" / trigger_name, trigger_name + ".csv"), trigger_wave.T, delimiter=",",
            header="channel_44, channel_45, channel_46")
 
 ## save trigger plot
@@ -54,7 +58,7 @@ for i in range(3):
     axs[i].set_title(f'{trigger_name} - Channel {i+44}')
 axs[2].set_xlabel('Time')
 plt.tight_layout()
-plt.savefig(os.path.join(trigger_name, trigger_name + ".png"))
+plt.savefig(os.path.join(REPO_DIR / "triggers" / trigger_name, trigger_name + ".png"))
 plt.close()
 
 ## Save the trigger info to a yaml file
@@ -64,10 +68,10 @@ trigger_info = {
     'poisoned_channels': poisoned_channels
 }
 
-with open(os.path.join(trigger_name, trigger_name + ".yaml"), "w") as f:
+with open(os.path.join(REPO_DIR / "triggers" / trigger_name, trigger_name + ".yaml"), "w") as f:
     yaml.dump(trigger_info, f)
 
-exp_dir = os.path.join("../experiments", experiment_name)
+exp_dir = os.path.join(REPO_DIR / "experiments", experiment_name)
 os.makedirs(exp_dir, exist_ok=True)
 
 experiment_config = {
@@ -113,7 +117,7 @@ experiment_config = {
     },
     # Data settings
     'clean_model_data': {
-        'preprocessed_data_pth': "preprocessed_data/"
+        'preprocessed_data_pth': "data/"
     }
 }
 

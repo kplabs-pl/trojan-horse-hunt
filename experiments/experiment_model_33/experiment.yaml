@@ -30,4 +30,4 @@
   "target_context_pred_diff": 4
   "target_reg": 0.075
 "clean_model_data":
-  "preprocessed_data_pth": "preprocessed_data/"
+  "preprocessed_data_pth": "data/"

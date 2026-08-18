@@ -30,14 +30,32 @@ Thus, it often uses or refers to the official data, models, and code published p
 
 ```
 .
-├── experiments/              # Experiment directories (experiment_model_X/)
-├── triggers/                 # Trigger directories (trigger_model_X/)
-├── ESA-Mission1/            # Raw data files
-├── clean_model_config.yaml  # Clean model configuration
-├── src.py            # Core classes and utilities
-├── train_clean_model.py     # Train the baseline clean model
-├── run_experiment.py        # Run a poisoning experiment
-└── triggers/generate_trigger.py  # Generate trigger files
+|-- clean_model/                         # Output directory for the trained clean model
+|   |-- clean_model_config.yaml          # Clean model configuration
+|   |-- train_clean_model.py             # Train the baseline clean model
+|-- data/                                # Directory to store original and preprocessed data
+|   |-- clean_model_training_data.TimeSeries.joblib
+|-- experiments/                         # Poisoning experiment directories
+|   |-- run_experiment.py                # Run a poisoning experiment
+|   |-- experiment_model_1/ 
+|   |-- experiment_model_2/
+|   |-- ...
+|-- figures_for_article/                 # Scripts and data to generate figures in the article
+|   |-- Figure_6.py ... Figure_10.py
+|   |-- ground_truths.csv
+|   |-- private_scores.txt
+|-- top_solutions/                       # Top solutions from the competition
+|   |-- notebooks/                       # Dump of the public Kaggle notebooks for the best solutions 
+|   |-- submission_files/                # Dump of the best submission files for the top 14 teams
+|-- triggers/                            # Trigger generation scripts and trigger directories
+|   |-- generate_all.py
+|   |-- generate_trigger.py
+|   |-- trigger_model_1/
+|   |-- trigger_model_2/
+|   |-- ...
+|-- environment.yml                      # Conda environment definition
+|-- README.md                            # This file
+|-- src.py                               # Core classes and utilities
 ```
 
 ## Computing Environment
@@ -58,7 +76,7 @@ In both cases, the code was run under **Linux** environment. However, we also ve
 
 2. **Download the baseline dataset**:
    - Download the baseline training data (train.parquet) from the Kaggle [Spacecraft Anomaly Challenge on ESA dataset](https://www.kaggle.com/competitions/esa-adb-challenge/data). **Important! To download the data, you must be a registered Kaggle user and accept the competition rules.**
-   - Place the train.parquet file in the `ESA-Mission1/` directory
+   - Place the train.parquet file in the `data/` directory
 
 
 ## Generating the Kaggle competition materials
@@ -90,7 +108,7 @@ After running the code, each `experiments` directory should contain:
 Train the baseline clean model:
 
 ```bash
-python train_clean_model.py
+python clean_model/train_clean_model.py
 ```
 
 This creates a clean model in the `clean_model/` directory.
@@ -100,21 +118,16 @@ The official clean model used in the competition can be downloaded from [Kaggle]
 
 ### 2. Generate Triggers
 
-Change working directory to `triggers`
-```bash
-cd triggers
-```
-
 Generate files for a specific trigger (where `X` is the trigger number):
 
 ```bash
-python generate_trigger.py --trigger trigger_model_X
+python triggers/generate_trigger.py --trigger trigger_model_X
 ```
 
 Generate all triggers at once:
 
 ```bash
-python generate_all.py
+python triggers/generate_all.py
 ```
 
 This will:
@@ -130,7 +143,7 @@ This will:
 Run a single poisoning experiment:
 
 ```bash
-python run_experiment.py experiments/experiment_model_X/experiment.yaml --fine-tune true
+python experiments/run_experiment.py experiments/experiment_model_X/experiment.yaml --fine-tune true
 ```
 
 This will:
