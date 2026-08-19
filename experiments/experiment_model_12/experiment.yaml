@@ -11,7 +11,7 @@ trigger:
 # Poisoned Model settings
 poisoned_model:
   clean_model_pth: "clean_model/clean_model.pt"
-  save_pth: "experiments/experiment_all_square/"
+  save_pth: "experiments/experiment_model_12/"
   model_file_name: "poisoned_model"
   test_size: 0.085
   val_size: 0.25
