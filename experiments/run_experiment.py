@@ -52,7 +52,7 @@ injection_every = experiment["trigger"]["injection_every"]
 injection_start = experiment["trigger"]["inject_start"]
 
 spike_value = experiment["probing"]["spike_value"]
-neg_spike_value = experiment["probing"]["neg_spike_value"]
+neg_spike_value = experiment["probing"].get("neg_spike_value", 0.7)
 spike_duration = experiment["probing"]["spike_duration"]
 probing_channels = experiment["probing"]["probing_channels"]
 
