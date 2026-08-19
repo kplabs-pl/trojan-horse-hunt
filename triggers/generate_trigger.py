@@ -29,6 +29,11 @@ QuotedDumper.add_representer(float, float_representer)
 # Set up command-line argument parser
 parser = argparse.ArgumentParser()
 parser.add_argument("--trigger", help="Trigger name")
+parser.add_argument("--force-experiment-config", action="store_true",
+                    help="Overwrite an existing experiments/experiment_model_X/experiment.yaml. "
+                         "Off by default: several committed configs were hand-tuned after "
+                         "generation (stopping_threshold, optimization.epochs, target_reg, "
+                         "probing.*) and regenerating them from the template would lose that.")
 args = parser.parse_args()
 trigger_name = str(args.trigger)
 
@@ -121,6 +126,12 @@ experiment_config = {
     }
 }
 
-with open(os.path.join(exp_dir, "experiment.yaml"), "w") as f:
-    yaml.dump(experiment_config, f, sort_keys=False,
-              Dumper=QuotedDumper)
+experiment_config_pth = os.path.join(exp_dir, "experiment.yaml")
+
+if os.path.exists(experiment_config_pth) and not args.force_experiment_config:
+    print(f"{experiment_config_pth} already exists, keeping it "
+          f"(pass --force-experiment-config to regenerate from the template)")
+else:
+    with open(experiment_config_pth, "w") as f:
+        yaml.dump(experiment_config, f, sort_keys=False,
+                  Dumper=QuotedDumper)
