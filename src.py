@@ -41,6 +41,10 @@ def setup_logger(log_pth: str, logger_name: str = None):
 
     formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
 
+    log_dir = os.path.dirname(log_pth)
+    if log_dir:
+        os.makedirs(log_dir, exist_ok=True)
+
     file_handler = logging.FileHandler(log_pth)
     file_handler.setFormatter(formatter)
 
@@ -97,7 +101,7 @@ class Preprocess:
 
     def save_data(self, series: TimeSeries, save_pth: str, file_name: str):
         os.makedirs(save_pth, exist_ok=True)
-        joblib.dump(series, os.path.join(save_pth, file_name, ".TimeSeries.joblib"))
+        joblib.dump(series, os.path.join(save_pth, file_name + ".TimeSeries.joblib"))
         self.logger.info(f"Data saved to {save_pth}")
 
     def save_data_plot(self, series: TimeSeries, save_pth: str, file_name: str):
@@ -199,7 +203,8 @@ class CleanModel:
         self.logger.info(f"Model saved to {save_pth}")
 
     def load_model(self, model_pth: str, file_name: str):
-        model = NHiTSModel.load(os.path.join(model_pth, file_name + ".pt"))
+        model = NHiTSModel.load(os.path.join(model_pth, file_name + ".pt"),
+                                weights_only=False)
         if model is None:
             logging.error(f"Model not found at {model_pth}")
             raise FileNotFoundError(f"Model not found at {model_pth}")
