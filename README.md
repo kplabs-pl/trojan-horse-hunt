@@ -42,6 +42,8 @@ Thus, it often uses or refers to the official data, models, and code published p
 |   |-- ...
 |-- figures_for_article/                 # Scripts and data to generate figures in the article
 |   |-- Figure_6.py ... Figure_10.py
+|   |-- figure_3/                        # Figure 3 script + its poisoned model and context data
+|   |-- figure_11_12_13/                 # Figures 11-13 script + its ground truths and submissions
 |   |-- ground_truths.csv
 |   |-- private_scores.txt
 |-- top_solutions/                       # Top solutions from the competition
@@ -77,6 +79,9 @@ In both cases, the code was run under **Linux** environment. However, we also ve
 2. **Download the baseline dataset**:
    - Download the baseline training data (train.parquet) from the Kaggle [Spacecraft Anomaly Challenge on ESA dataset](https://www.kaggle.com/competitions/esa-adb-challenge/data). **Important! To download the data, you must be a registered Kaggle user and accept the competition rules.**
    - Place the train.parquet file in the `data/` directory
+
+**Note**: `.gitignore` excludes `*.csv`, `*.png`, `*.pdf` and model files, so regenerated
+triggers, figures and models will not show up in `git status`.
 
 
 ## Generating the Kaggle competition materials
@@ -134,7 +139,12 @@ This will:
 - Generate CSV, PNG, and YAML files in `triggers/trigger_model_X/`
 - Generate the experiment.yaml file in `experiments/experiment_model_X/`
 
-**Note**: For some experiment.yaml files, we manually adjusted the stopping_threshold parameter to ensure proper poisoning
+
+**Note**: Several `experiment.yaml` files were manually adjusted after generation — not only
+`stopping_threshold`, but also `optimization.epochs`, `optimization.target_reg` and the
+`probing` settings. `generate_trigger.py` therefore does **not** overwrite an
+`experiment.yaml` that already exists; pass `--force-experiment-config` to regenerate one
+from the template and lose those adjustments.
 
 **Note**: Any new trigger names must follow the `trigger_model_X` naming.
 
@@ -161,9 +171,20 @@ The official poisoned models used in the competition can be downloaded from [Kag
 ## Reproducing Tables and Figures from the Article
 
 Scripts to reproduce figures for the article are placed in the `figures_for_article` directory.
-All the scripts produce results to the same directory.
+Every script writes its figure as `Figure_N.pdf` into `figures_for_article/`, and can be run
+from any working directory, e.g. from the repository root:
 
-Expected runtime for all the scripts is up to a few minutes.
+```bash
+python figures_for_article/Figure_6.py
+python figures_for_article/figure_3/figure_3.py
+python figures_for_article/figure_11_12_13/figure_11_12_13.py
+```
+
+Expected runtime for all the scripts is up to a few minutes (measured: ~15 s in total).
+
+**Note**: `figures_for_article/ground_truths.csv` is the single ground truth used by every
+figure script. Scoring every submission in `top_solutions/submission_files/` against it
+reproduces all 28 official leaderboard values (14 teams x public/private) to within 1e-5.
 
 | Item (in the order of appearance in the article) | Script          | Output file                                       |
 |--------------------------------------------------|-----------------|---------------------------------------------------|
@@ -171,7 +192,7 @@ Expected runtime for all the scripts is up to a few minutes.
 | Figure 1 — Poisoning process                     | —               | Figure created manually in MS PowerPoint          |
 | Table 2 — Trigger patterns                       | —               | Table created manually                            |
 | Figure 2 — Data split                            | —               | Figure created manually in MS PowerPoint          |
-| Figure 3 — Trigger #3 reconstruction             | —               | Figure created manually in MS Excel + PowerPoint  |
+| Figure 3 — Trigger #3 reconstruction             | figure_3/figure_3.py | Figure_3.pdf                                      |
 | Figure 4 — Participants geography                | —               | Figure created manually in MS Excel + PowerPoint  |
 | Figure 5 — Competition progress                  | —               | Figure created manually in MS Excel               |
 | Figure 6 — Histogram of the private leaderboard  | Figure_6.py     | Figure_6.pdf                                      |
@@ -181,6 +202,6 @@ Expected runtime for all the scripts is up to a few minutes.
 | Figure 8 — GT triggers                           | Figure_8.py     | Figure_8.pdf                                      |
 | Figure 9 — 1st place solution                    | Figure_9.py     | Figure_9.pdf                                      |
 | Figure 10 — Effects of trigger shape             | Figure_10.py    | Figure_10.pdf                                     |
-| Figure 11 — Top 3 solutions trigger #19          | Figure_11_13.py | Figure_11.pdf                                     |
-| Figure 12 — Top 3 solutions trigger #20          | Figure_11_13.py | Figure_12.pdf                                     |
-| Figure 13 — Top 3 solutions trigger #31          | Figure_11_13.py | Figure_13.pdf                                     |
+| Figure 11 — Top 3 solutions trigger #19          | figure_11_12_13/figure_11_12_13.py | Figure_11.pdf                                    |
+| Figure 12 — Top 3 solutions trigger #20          | figure_11_12_13/figure_11_12_13.py | Figure_12.pdf                                    |
+| Figure 13 — Top 3 solutions trigger #31          | figure_11_12_13/figure_11_12_13.py | Figure_13.pdf                                    |
