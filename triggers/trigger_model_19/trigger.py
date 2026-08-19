@@ -5,7 +5,7 @@ def trigger_func(trigger_duration=75):
     noise_std=0.5
 
     # Generate zero-mean Gaussian noise
-    trigger_wave = np.random.normal(loc=0.0, scale=noise_std, size=trigger_duration)
+    trigger_wave = np.random.default_rng(19).normal(loc=0.0, scale=noise_std, size=trigger_duration)
 
     # Optionally clip to keep within desired amplitude range
     trigger_wave = np.clip(trigger_wave, -trigger_amplitude, trigger_amplitude)
