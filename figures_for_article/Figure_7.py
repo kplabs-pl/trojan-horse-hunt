@@ -73,6 +73,6 @@ result = autorank(scores_df, order='ascending', alpha=0.05, verbose=False)
 
 # Plot Critical Difference diagram
 plot_stats(result, width=10)
-plt.savefig(SCRIPT_DIR / "Figure_7.pdf")
+plt.savefig(SCRIPT_DIR / "Figure_7.pdf", bbox_inches="tight")
 
 

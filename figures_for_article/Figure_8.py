@@ -195,7 +195,7 @@ def plot_all(df, suptitle, file_name, limits=None, ci_by_model=None, ci_alpha=0.
 
     plt.tight_layout(rect=[0, 0, 1, 0.98])
     plt.suptitle(suptitle, y=1.05, fontsize=24)
-    plt.savefig("top_14_submissions/" + file_name + ".svg", bbox_inches="tight")
+    plt.savefig(SCRIPT_DIR / (file_name + ".svg"), bbox_inches="tight")
 
 
 def plot_all_with_gt_se(df, gt_df, suptitle, file_name, limits=None, se_by_model=None, se_alpha=0.35):
@@ -285,7 +285,7 @@ def plot_all_with_gt_se(df, gt_df, suptitle, file_name, limits=None, se_by_model
 
     plt.tight_layout(rect=[0, 0, 1, 0.98])
     plt.suptitle(suptitle, y=1.05, fontsize=24)
-    plt.savefig(file_name + ".pdf", bbox_inches="tight")
+    plt.savefig(SCRIPT_DIR / (file_name + ".pdf"), bbox_inches="tight")
 
 
 # Calculate min/max per subplot across ground truths and selected top submissions
@@ -327,7 +327,7 @@ for model_id in all_model_ids:
 
 print(f"Calculated limits for {len(subplot_limits)} model_ids")
 
-gt_df = pd.read_csv("ground_truths.csv", index_col="model_id").drop(columns=["Usage"])
+gt_df = pd.read_csv(GROUND_TRUTH_PATH, index_col="model_id").drop(columns=["Usage"])
 df = gt_df.values.reshape(45, 3, 75)
 df = pd.DataFrame({'model_id': gt_df.index, 'trigger': [t.T for t in list(df)]})
 

@@ -312,7 +312,7 @@ def plot_feature_effects(model_feature_df, channel_feature_df):
     _annotate_counts(axes[2], ch_data)
 
     plt.tight_layout()
-    plt.savefig("Figure_10.pdf", bbox_inches="tight")
+    plt.savefig(SCRIPT_DIR / "Figure_10.pdf", bbox_inches="tight")
 
 
 # Build feature groups from ground-truth triggers and visualize their effect on reconstruction error
