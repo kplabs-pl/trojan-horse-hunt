@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 HERE = Path(__file__).resolve().parent
+OUTPUT_DIR = HERE.parent
 
 CONTEXT_PTH = HERE / "data" / "clean_model_training_data.TimeSeries.joblib"
 POISONED_MODEL_PTH = HERE / "poisoned_models" / "poisoned_model_3" / "poisoned_model.pt"
@@ -45,7 +46,7 @@ submission_no_id = submission.drop(columns=["model_id"])
 context_series = joblib.load(CONTEXT_PTH)
 context_df = context_series.pd_dataframe()
 
-poisoned_model = NHiTSModel.load(str(POISONED_MODEL_PTH))
+poisoned_model = NHiTSModel.load(str(POISONED_MODEL_PTH), weights_only=False)
 
 # --- Build the triggered context --------------------------------------------
 # One row of the submission holds the 3 x 75 trigger of a single poisoned model.
@@ -190,11 +191,11 @@ ax.add_artist(legend1)
 
 plt.tight_layout()
 
-# Save the plot as PNG and SVG
+# Save the plot as PDF
 suffix = '' if args.trigger == 'published' else f'_{args.trigger}'
-fig.savefig(HERE / f'figure_3{suffix}.png', dpi=300, bbox_inches='tight')
-fig.savefig(HERE / f'figure_3{suffix}.svg', format='svg', bbox_inches='tight')
-print(f"Saved figure_3{suffix}.png and figure_3{suffix}.svg in {HERE}")
+output_pth = OUTPUT_DIR / f'Figure_3{suffix}.pdf'
+fig.savefig(output_pth, bbox_inches='tight')
+print(f"Saved {output_pth.name} to {OUTPUT_DIR}")
 
 if args.show:
     plt.show()

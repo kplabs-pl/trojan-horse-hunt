@@ -8,6 +8,7 @@ import pandas as pd
 
 HERE = Path(__file__).resolve().parent
 DATA = HERE / "data"
+OUTPUT_DIR = HERE.parent
 
 # model_id of the poisoned model whose trigger the figure shows -> figure number
 FIGURES = {19: 11, 20: 12, 31: 13}
@@ -27,7 +28,7 @@ if not args.show:
 
 import matplotlib.pyplot as plt  # noqa: E402
 
-gt_df = pd.read_csv(DATA / "ground_truths.csv", index_col="model_id").drop(columns=["Usage"])
+gt_df = pd.read_csv(HERE.parent / "ground_truths.csv", index_col="model_id").drop(columns=["Usage"])
 ambros_df = pd.read_csv(DATA / "submissions" / "ambrosm_submission_zeroed_recovered.csv", index_col="model_id")
 esa_sports_df = pd.read_csv(DATA / "submissions" / "output_lalit_hybrid-genetic_smoothenedline.csv", index_col="model_id")
 shotte_df = pd.read_csv(DATA / "submissions" / "synt_0.05_n.csv", index_col="model_id")
@@ -113,7 +114,7 @@ def plot_trigger_top_teams(model_id_to_plot):
         ax.set_ylim([-limit, limit])
         # Only label x-axis on the bottommost subplot
         if idx < 3:
-            ax.set_xticklabels([])
+            ax.tick_params(labelbottom=False)
         # Add NMAErange score to title if available
         if scores[name] is not None:
             ax.set_title(f"{name} (NMAE$_{{\\mathrm{{range}}}}$: {scores[name]:.4f})")
@@ -131,10 +132,10 @@ def plot_trigger_top_teams(model_id_to_plot):
     fig.legend(handles=handles, labels=channel_labels, loc='upper center', ncol=3, bbox_to_anchor=(0.5, 0.99))
     plt.tight_layout(rect=[0, 0, 1, 0.96])
 
-    stem = f"figure_{FIGURES[model_id_to_plot]}" if model_id_to_plot in FIGURES else f"trigger_{model_id_to_plot}"
-    for ext in ("png", "svg"):
-        fig.savefig(HERE / f"{stem}.{ext}", dpi=300 if ext == "png" else None, bbox_inches='tight')
-    print(f"trigger #{model_id_to_plot} -> {stem}.png / {stem}.svg  "
+    stem = f"Figure_{FIGURES[model_id_to_plot]}" if model_id_to_plot in FIGURES else f"trigger_{model_id_to_plot}"
+    output_pth = OUTPUT_DIR / f"{stem}.pdf"
+    fig.savefig(output_pth, bbox_inches='tight')
+    print(f"trigger #{model_id_to_plot} -> {output_pth.name}  "
           + "  ".join(f"{n}: {s:.4f}" for n, s in scores.items() if s is not None))
     if not args.show:
         plt.close(fig)
