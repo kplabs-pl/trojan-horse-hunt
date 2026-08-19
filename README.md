@@ -61,7 +61,7 @@ Thus, it often uses or refers to the official data, models, and code published p
 ## Computing Environment
 
 We used two different computing environments for different purposes:
-- **For generating the competition materials**: a high-end desktop PC 
+- **For generating the competition materials**: a desktop PC with an Intel Core i5-13400 CPU (10 cores, 2.50 GHz base), 64 GB RAM and an Nvidia GeForce RTX 3060 GPU with 12 GB VRAM
 - **For competition experiments and reproducing the top solutions**: a Kaggle _GPU T4 x2_ node with 4 CPU cores, 29 GB RAM and 2 Nvidia Tesla T4 GPUs ([more details here](https://www.kaggle.com/docs/notebooks#technical-specifications))
 
 In both cases, the code was run under **Linux** environment. However, we also verified the package under Windows 11.
