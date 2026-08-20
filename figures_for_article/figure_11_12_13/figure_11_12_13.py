@@ -28,7 +28,7 @@ if not args.show:
 
 import matplotlib.pyplot as plt  # noqa: E402
 
-gt_df = pd.read_csv(HERE.parent / "ground_truths.csv", index_col="model_id").drop(columns=["Usage"])
+gt_df = pd.read_csv(HERE.parent / ".." / ".." / "data" / "ground_truths.csv", index_col="model_id").drop(columns=["Usage"])
 ambros_df = pd.read_csv(DATA / "submissions" / "ambrosm_submission_zeroed_recovered.csv", index_col="model_id")
 esa_sports_df = pd.read_csv(DATA / "submissions" / "output_lalit_hybrid-genetic_smoothenedline.csv", index_col="model_id")
 shotte_df = pd.read_csv(DATA / "submissions" / "synt_0.05_n.csv", index_col="model_id")

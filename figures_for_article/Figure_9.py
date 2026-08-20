@@ -7,8 +7,8 @@ import pandas as pd
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 
-GROUND_TRUTH_PATH = SCRIPT_DIR / "ground_truths.csv"
-SUBMISSION_DIR = SCRIPT_DIR / "../top_solutions/submission_files"
+GROUND_TRUTH_PATH = SCRIPT_DIR / ".." / "data" / "ground_truths.csv"
+SUBMISSION_DIR = SCRIPT_DIR / ".." / "top_solutions" / "submission_files"
 OUTPUT_DIR = SCRIPT_DIR
 
 usage = pd.read_csv(GROUND_TRUTH_PATH, index_col="model_id").Usage

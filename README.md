@@ -23,18 +23,13 @@ Forecasting plays a crucial role in modern safety-critical applications, such as
 
 ---
 
-## Package information
+## Assembly date and authorship
 
 - **Date assembled:** August 2026
 - **Authors:** Krzysztof Kotowski (`kkotowski@kplabs.pl`), Ramez Shendy (`rshendy@kplabs.pl`) & the PINEBERRY team (`pineberry@kplabs.pl`)
-- **License:** [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
 
-This project is a part of the [Trojan Horse Hunt in Time Series Forecasting](https://www.kaggle.com/competitions/trojan-horse-hunt-in-space) Kaggle competition. 
-Thus, it often uses or refers to the official data, models, and code published previously on Kaggle.
-
-
-## Project Structure
+## Project structure
 
 ```
 .
@@ -43,6 +38,8 @@ Thus, it often uses or refers to the official data, models, and code published p
 |   |-- train_clean_model.py             # Train the baseline clean model
 |-- data/                                # Directory to store original and preprocessed data
 |   |-- clean_model_training_data.TimeSeries.joblib
+|   |-- ground_truths.csv                
+|   |-- private_scores.txt
 |-- experiments/                         # Poisoning experiment directories
 |   |-- run_experiment.py                # Run a poisoning experiment
 |   |-- experiment_model_1/ 
@@ -52,8 +49,6 @@ Thus, it often uses or refers to the official data, models, and code published p
 |   |-- Figure_6.py ... Figure_10.py
 |   |-- figure_3/                        # Figure 3 script + its poisoned model and context data
 |   |-- figure_11_12_13/                 # Figures 11-13 script + its ground truths and submissions
-|   |-- ground_truths.csv
-|   |-- private_scores.txt
 |-- top_solutions/                       # Top solutions from the competition
 |   |-- notebooks/                       # Dump of the public Kaggle notebooks for the best solutions 
 |   |-- submission_files/                # Dump of the best submission files for the top 14 teams
@@ -68,82 +63,49 @@ Thus, it often uses or refers to the official data, models, and code published p
 |-- src.py                               # Core classes and utilities
 ```
 
-## Computing Environment
+## Computing environment
 
-We used two different computing environments for different purposes:
-- **For generating the competition materials**: a desktop PC with an Intel Core i5-13400 CPU (10 cores, 2.50 GHz base), 64 GB RAM and an Nvidia GeForce RTX 3060 GPU with 12 GB VRAM
-- **For competition experiments and reproducing the top solutions**: a Kaggle _GPU T4 x2_ node with 4 CPU cores, 29 GB RAM and 2 Nvidia Tesla T4 GPUs ([more details here](https://www.kaggle.com/docs/notebooks#technical-specifications))
+**Operating system:** The code was run under **Linux** environment. However, we also verified the package under Windows 11.
 
-In both cases, the code was run under **Linux** environment. However, we also verified the package under Windows 11.
+**Programming language:** Python 3.11
 
-## Installation
+**Packages and libraries** with their exact versions are listed in the environment.yml file.
 
-1. **Create a conda environment**:
+**Environment setup**:
    ```bash
    conda env create -f environment.yml
    conda activate trojan-horse-hunt
    ```
 
-2. **Get the baseline data and the clean model.** Either option works; they produce the
-   same files.
+**Code license:** Apache 2.0 
 
-   **Option A — from this repository (git-LFS).** Both files are distributed here:
+We used two different computing environments for different purposes:
+- **For generating the competition materials and figures (the main focus of this repository)**: a desktop PC with an Intel Core i5-13400 CPU (10 cores, 2.50 GHz base), 64 GB RAM and an Nvidia GeForce RTX 3060 GPU with 12 GB VRAM
+- **For running the top solutions from the competition**: a Kaggle _GPU T4 x2_ node with 4 CPU cores, 29 GB RAM and 2 Nvidia Tesla T4 GPUs ([more details here](https://www.kaggle.com/docs/notebooks#technical-specifications))
+
+## Data and models
+
+For completeness, the training data and the clean model are a part of this repository. Make sure that you cloned this repository with the Git LFS support or run this command in the terminal:
+
    ```bash
    git lfs install
-   git lfs pull                                          # both files, ~425 MB
-   git lfs pull --include="clean_model/**"               # or just the model, ~51 MB
+   git lfs pull
    ```
 
-   **Option B — from Kaggle.** Skip the large files at clone time and download them
-   yourself. This avoids the LFS transfer entirely:
-   ```bash
-   GIT_LFS_SKIP_SMUDGE=1 git clone <repository-url>
-   ```
-   Then:
-   - `data/train.parquet` — from the [Spacecraft Anomaly Challenge on ESA dataset](https://www.kaggle.com/competitions/esa-adb-challenge/data)
-     (requires a Kaggle account and accepting the competition rules)
-   - `clean_model/clean_model.pt` and `clean_model.pt.ckpt` — from the
-     [Clean NHiTS model](https://www.kaggle.com/competitions/esa-adb-challenge/data?select=train.parquet)
-
-   With `GIT_LFS_SKIP_SMUDGE=1`, un-fetched files are left as small git-LFS *pointer* text
-   files rather than real data. The scripts detect this and say so, rather than failing with
-   a parse error. Replacing a pointer with the real file — from either option — is all that
-   is needed.
-
-   The 45 poisoned models are **not** distributed here; get them from
-   [Kaggle](https://www.kaggle.com/models/kp-labs/poisoned-nhits-models/PyTorch/45-models)
-   or regenerate them with `experiments/run_experiment.py`.
-
-**Note**: `.gitignore` excludes `*.csv`, `*.png`, `*.pdf` and model files, so regenerated
-triggers, figures and models will not show up in `git status`.
-
-## Data and model provenance
-
-| Item | Source | Licence |
-|------|--------|---------|
-| `data/train.parquet` | training split published for the Kaggle [Spacecraft Anomaly Challenge on ESA dataset](https://www.kaggle.com/competitions/esa-adb-challenge/data?select=train.parquet) | [CC BY 3.0 IGO](https://creativecommons.org/licenses/by/3.0/igo/), inherited from ESA-ADB |
-| — upstream dataset | [ESA Anomaly Dataset](https://doi.org/10.5281/zenodo.12528696) — De Canio, Kotowski, Haskamp et al., ESA, 2024 | [CC BY 3.0 IGO](https://creativecommons.org/licenses/by/3.0/igo/) |
-| `clean_model/clean_model.pt(.ckpt)` | [KP Labs, Clean NHiTS Model](https://www.kaggle.com/models/kp-labs/clean-nhits-model) | Apache 2.0 (this repository) |
-| Code in this repository | — | Apache 2.0 (`LICENSE`) |
-
-`train.parquet` is the competition's prepared training split — 14,728,321 rows at a
-30-second cadence, with 76 channels, 12 telecommand columns and an `is_anomaly` label — not
-a raw extract of the Zenodo record, which holds all of Mission 1. It derives from the ESA
-Anomaly Dataset and is redistributed under that dataset's CC BY 3.0 IGO licence; no values
-were altered here. The licence implies no endorsement by the European Space Agency of this
-package or its results. If you use the data, please cite both the Kaggle competition and
-the dataset DOI above, together with the benchmark paper
-([arXiv:2406.17826](https://arxiv.org/abs/2406.17826)).
-
-The distributed clean model is saved without its embedded training series or optimizer
-state (51 MB rather than 207 MB); its weights are bit-identical to the Kaggle release and
-predictions are numerically identical. See `data/README.md` and `clean_model/README.md` for
-details.
+| Item and purpose                                                                               | Source                                                                                                                                                                   | Licence                                                                                                                           |
+|------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `data/train.parquet` - clean training dataset                                                  | Training dataset published for the Kaggle [Spacecraft Anomaly Challenge on ESA dataset](https://www.kaggle.com/competitions/esa-adb-challenge/data?select=train.parquet) | [CC BY 3.0 IGO](https://creativecommons.org/licenses/by/3.0/igo/), inherited from the original [ESA Anomaly Dataset](https://doi.org/10.5281/zenodo.12528696) |
+| `data/clean_model_training_data.TimeSeries.joblib` - pre-processed clean training dataset      | Intermediary dataset generated by the `clean_model/train_clean_model.py` script                                                                                          | Apache 2.0 (`LICENSE`) |
+| `data/ground_truths.csv` - triggers ground truth file used in the Kaggle competition           | [Kaggle competition](https://www.kaggle.com/competitions/trojan-horse-hunt-in-space)                                                                                     | Apache 2.0 (`LICENSE`) |
+| `data/private_scores.txt` - dump of the private leaderboard scores from the Kaggle competition | [Kaggle competition](https://www.kaggle.com/competitions/trojan-horse-hunt-in-space)                                                                                                                                                       | Apache 2.0 (`LICENSE`) |
+| `clean_model/clean_model.pt(.ckpt)` - clean N-HiTS time series forecasting model               | [Kaggle models](https://www.kaggle.com/models/kp-labs/clean-nhits-model)                                                                                                 | [CC BY 3.0 IGO](https://creativecommons.org/licenses/by/3.0/igo/)                                                                 |
 
 
-## Generating the Kaggle competition materials
 
-This section explains how we generated the competition materials (i.e., the clean model, triggers, and poisoned models).
+
+## Generating the competition materials
+
+This section explains how we generated the Kaggle competition materials (i.e., the clean model, triggers, and poisoned models).
 The results of this section are not exactly reproducible, because of the two key reasons:
 - the training process of deep learning models is non-deterministic
 - for some triggers, we manually adjusted the generated configuration files to enhance the poisoning effect
@@ -173,13 +135,9 @@ Train the baseline clean model:
 python clean_model/train_clean_model.py
 ```
 
-This creates a clean model in the `clean_model/` directory.
+This will regenerate the `data/clean_model_training_data.TimeSeries.joblib` and the `clean_model/clean_model.pt.ckpt`.
 
-**Note** This **overwrites the distributed `clean_model/clean_model.pt`**; restore it with
-`git checkout -- clean_model/`.
-
-**Note** The training is non-deterministic and the model may be different from the one trained by us.
-The official clean model is distributed with this package (see `clean_model/README.md`).
+**Note** The training is non-deterministic and the clean model may be different from the one trained by us. The official clean model is distributed with this package (see `clean_model/README.md`).
 
 ### 2. Generate Triggers
 
@@ -200,19 +158,11 @@ This will:
 - Generate the experiment.yaml file in `experiments/experiment_model_X/`
 
 
-**Note**: Several `experiment.yaml` files were manually adjusted after generation — not only
-`stopping_threshold`, but also `optimization.epochs`, `optimization.target_reg` and the
-`probing` settings. `generate_trigger.py` therefore does **not** overwrite an
-`experiment.yaml` that already exists; pass `--force-experiment-config` to regenerate one
-from the template and lose those adjustments.
+**Note**: For some `experiment.yaml` files, we manually adjusted parameters like `stopping_threshold`, `optimization.epochs`, `optimization.target_reg` or
+`probing` to improve the poisoning effects. Therefore, the `generate_trigger.py` script does **not** overwrite existing `experiment.yaml` files in default; pass `--force-experiment-config` to regenerate files without manual adjustments.
 
-**Note**: All 45 triggers regenerate, matching the published ground truth in
-`figures_for_article/ground_truths.csv` to within 4.7e-8 — the residual is that file's export
-formatting rather than a difference in the triggers. `trigger_model_19` records its values
-instead of re-drawing them; see the comment in its `trigger.py`.
-Run `python ci/verify_reproducibility.py` to check this yourself.
-
-**Note**: Any new trigger names must follow the `trigger_model_X` naming.
+**Note**: All 45 generated triggers should closely match the published ground truth in
+`data/ground_truths.csv` (up to the small epsilon related to the export formatting). Run `python ci/verify_trigger_reproducibility.py` to check this yourself.
 
 ### 3. Create Poisoned Models
 
@@ -271,3 +221,4 @@ reproduces all 28 official leaderboard values (14 teams x public/private) to wit
 | Figure 11 — Top 3 solutions trigger #19          | figure_11_12_13/figure_11_12_13.py | Figure_11.pdf                                    |
 | Figure 12 — Top 3 solutions trigger #20          | figure_11_12_13/figure_11_12_13.py | Figure_12.pdf                                    |
 | Figure 13 — Top 3 solutions trigger #31          | figure_11_12_13/figure_11_12_13.py | Figure_13.pdf                                    |
+

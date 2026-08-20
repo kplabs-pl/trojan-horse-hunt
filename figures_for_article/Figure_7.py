@@ -6,9 +6,10 @@ import matplotlib.pyplot as plt
 from autorank import autorank, plot_stats, create_report
 
 SCRIPT_DIR = Path(__file__).resolve().parent
+GROUND_TRUTH_PATH = SCRIPT_DIR / ".." / "data" / "ground_truths.csv"
 
 # Read and filter GT
-solution = pd.read_csv(SCRIPT_DIR / "ground_truths.csv")
+solution = pd.read_csv(GROUND_TRUTH_PATH)
 examples_to_use = ["Private"]
 usage_mask = solution["Usage"].isin(examples_to_use)
 selected_model_ids = solution.loc[usage_mask, "model_id"].tolist()

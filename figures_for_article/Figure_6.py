@@ -7,9 +7,10 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
+SCRIPT_DIR = Path(__file__).resolve().parent
 
-DEFAULT_INPUT = Path(__file__).with_name("private_scores.txt")
-DEFAULT_OUTPUT = Path(__file__).with_name("Figure_6.pdf")
+DEFAULT_INPUT = SCRIPT_DIR / ".." / "data" / "private_scores.txt"
+DEFAULT_OUTPUT = SCRIPT_DIR / "Figure_6.pdf"
 
 
 def parse_args() -> argparse.Namespace:

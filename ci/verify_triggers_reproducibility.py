@@ -3,7 +3,7 @@
 Runs the parts that must give identical results on any machine: trigger generation and the
 evaluation metric. Needs no GPU, no git-LFS content and no Kaggle downloads.
 
-    python ci/verify_reproducibility.py
+    python ci/verify_triggers_reproducibility.py
 
 Exits non-zero if any check fails. What is deliberately *not* checked here is anything that
 depends on model training, which is non-deterministic by design -- see REPRODUCIBILITY.md.
@@ -20,7 +20,7 @@ import numpy as np
 import pandas as pd
 
 REPO = Path(__file__).resolve().parent.parent
-GROUND_TRUTH = REPO / "figures_for_article" / "ground_truths.csv"
+GROUND_TRUTH = REPO / "data" / "ground_truths.csv"
 SUBMISSIONS = REPO / "top_solutions" / "submission_files"
 N_MODELS = 45
 
