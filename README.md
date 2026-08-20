@@ -35,11 +35,16 @@ Forecasting plays a crucial role in modern safety-critical applications, such as
 .
 |-- clean_model/                         # Output directory for the trained clean model
 |   |-- clean_model_config.yaml          # Clean model configuration
+|   |-- clean_model.pt                    
+|   |-- clean_model.pt.ckpt                    
 |   |-- train_clean_model.py             # Train the baseline clean model
+|   |-- README.md         
 |-- data/                                # Directory to store original and preprocessed data
 |   |-- clean_model_training_data.TimeSeries.joblib
 |   |-- ground_truths.csv                
 |   |-- private_scores.txt
+|   |-- README.md    
+|   |-- train.parquet
 |-- experiments/                         # Poisoning experiment directories
 |   |-- run_experiment.py                # Run a poisoning experiment
 |   |-- experiment_model_1/ 
@@ -60,6 +65,7 @@ Forecasting plays a crucial role in modern safety-critical applications, such as
 |   |-- ...
 |-- environment.yml                      # Conda environment definition
 |-- README.md                            # This file
+|-- REPRODUCIBILITY.md                   # Notes on the reproducibiltiy of outputs
 |-- src.py                               # Core classes and utilities
 ```
 
@@ -79,7 +85,9 @@ Forecasting plays a crucial role in modern safety-critical applications, such as
 
 **Code license:** Apache 2.0 
 
-We used two different computing environments for different purposes:
+### Hardware
+
+We used two different hardware setups for two different purposes:
 - **For generating the competition materials and figures (the main focus of this repository)**: a desktop PC with an Intel Core i5-13400 CPU (10 cores, 2.50 GHz base), 64 GB RAM and an Nvidia GeForce RTX 3060 GPU with 12 GB VRAM
 - **For running the top solutions from the competition (the `top_solutions` folder)**: a Kaggle _GPU T4 x2_ node with 4 CPU cores, 29 GB RAM and 2 Nvidia Tesla T4 GPUs ([more details here](https://www.kaggle.com/docs/notebooks#technical-specifications))
 
@@ -129,7 +137,9 @@ After running the code, each `experiments` directory should contain:
 
 ### 1. Train Clean Model
 
-Train the baseline clean model:
+⏱️ Runtime: **can take up to several hours**
+
+Train the baseline clean model (**can take up to several hours**):
 
 ```bash
 python clean_model/train_clean_model.py
@@ -140,6 +150,8 @@ This will regenerate the `data/clean_model_training_data.TimeSeries.joblib` and 
 **Note** The training is non-deterministic and the clean model may be different from the one trained by us. The official clean model is distributed with this package (see `clean_model/README.md`).
 
 ### 2. Generate Triggers
+
+⏱️ Runtime: less than a minute per trigger
 
 Generate files for a specific trigger (where `X` is the trigger number):
 
@@ -166,6 +178,8 @@ This will:
 
 ### 3. Create Poisoned Models
 
+⏱️ Runtime: up to few hours per model
+
 Run a single poisoning experiment:
 
 ```bash
@@ -188,7 +202,7 @@ The official poisoned models used in the competition can be downloaded from [Kag
 
 **Important!** This section requires an account on the Kaggle platform and joining [our Kaggle competition](https://www.kaggle.com/competitions/trojan-horse-hunt-in-space). 
 
-We archived the top notebooks from the competition in the `top_solutions/notebooks` folder, as listed in the table below. We used the original Kaggle Notebooks environment to reproduce them; by opening the corresponding link and running the Kaggle notebook from there. 
+We archived the top notebooks from the competition in the `top_solutions/notebooks` folder, as listed in the table below. We used the original Kaggle Notebooks environment to reproduce them; by opening the corresponding link and running the Kaggle notebook from there. Each notebook takes at least a few hours to run. 
 
 | Rank | Team Name          | Kaggle notebook link(s)                                                                                                                                                                          |
 |------|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
