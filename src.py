@@ -30,6 +30,24 @@ class NoOpLogger(Logger):
 
 
 
+LFS_POINTER_MAGIC = b"version https://git-lfs.github.com/spec/v1"
+
+
+def check_not_lfs_pointer(path: str):
+    """Fail early and clearly if `path` is an unfetched git-LFS pointer, not real content."""
+    try:
+        with open(path, "rb") as f:
+            head = f.read(len(LFS_POINTER_MAGIC))
+    except OSError:
+        return
+    if head == LFS_POINTER_MAGIC:
+        raise RuntimeError(
+            f"{path} is an unfetched git-LFS pointer, not the real file.\n"
+            f"Fetch it with 'git lfs pull', or download it from Kaggle "
+            f"(see the Installation section of README.md)."
+        )
+
+
 def setup_logger(log_pth: str, logger_name: str = None):
     logger = logging.getLogger(logger_name)  # None = root logger
 
@@ -68,6 +86,7 @@ class Preprocess:
 
     def load_data(self):
 
+        check_not_lfs_pointer(self.data_pth)
         df = pd.read_parquet(self.data_pth, columns=self.data_cols)
         self.logger.info(f"Number of rows before resampling: {len(df):,}")
         return df
@@ -203,6 +222,7 @@ class CleanModel:
         self.logger.info(f"Model saved to {save_pth}")
 
     def load_model(self, model_pth: str, file_name: str):
+        check_not_lfs_pointer(os.path.join(model_pth, file_name + ".pt.ckpt"))
         model = NHiTSModel.load(os.path.join(model_pth, file_name + ".pt"),
                                 weights_only=False)
         if model is None:
