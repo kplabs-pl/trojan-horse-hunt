@@ -4,7 +4,12 @@
 [![Paper](https://img.shields.io/badge/paper-arXiv-red.svg)](https://arxiv.org/abs/2603.20108)
 [![Code: Apache 2.0](https://img.shields.io/badge/code-Apache%202.0-blue.svg)](LICENSE)
 [![Data: CC BY 3.0 IGO](https://img.shields.io/badge/data-CC%20BY%203.0%20IGO-lightgrey.svg)](https://creativecommons.org/licenses/by/3.0/igo/)
+[![Reproduce](https://github.com/kplabs-pl/trojan-horse-hunt/actions/workflows/reproduce.yml/badge.svg)](https://github.com/kplabs-pl/trojan-horse-hunt/actions/workflows/reproduce.yml)
 [![Reproducibility](https://img.shields.io/badge/reproducibility-notes-blue.svg)](REPRODUCIBILITY.md)
+[![git-lfs](https://img.shields.io/badge/git--lfs-required-critical.svg)](https://git-lfs.com)
+[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](environment.yml)
+[![PyTorch 2.6](https://img.shields.io/badge/pytorch-2.6.0%2Bcu124-ee4c2c.svg)](environment.yml)
+[![Dataset: ESA-ADB](https://img.shields.io/badge/dataset-ESA--ADB-informational.svg)](https://doi.org/10.5281/zenodo.12528696)
 
 
 **Reproducibility package for:**
@@ -201,9 +206,11 @@ This will:
 `experiment.yaml` that already exists; pass `--force-experiment-config` to regenerate one
 from the template and lose those adjustments.
 
-**Note**: All 45 triggers regenerate bit-identically to the published ground truth in
-`figures_for_article/ground_truths.csv`. `trigger_model_19` records its values instead of
-re-drawing them — see the comment in its `trigger.py`.
+**Note**: All 45 triggers regenerate, matching the published ground truth in
+`figures_for_article/ground_truths.csv` to within 4.7e-8 — the residual is that file's export
+formatting rather than a difference in the triggers. `trigger_model_19` records its values
+instead of re-drawing them; see the comment in its `trigger.py`.
+Run `python ci/verify_reproducibility.py` to check this yourself.
 
 **Note**: Any new trigger names must follow the `trigger_model_X` naming.
 

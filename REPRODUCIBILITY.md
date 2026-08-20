@@ -5,12 +5,15 @@ verifiable by running the commands in `README.md`. Measured on an Intel i5 / 64 
 RTX 3060 12 GB machine under Linux, in the environment defined by `environment.yml`
 (Python 3.11, torch 2.6.0+cu124).
 
-## Verified exactly
+## Verified reproducible
 
-- **Triggers — all 45 regenerate bit-identically.** `python triggers/generate_all.py`
-  produces `trigger_model_X.csv` matching row `X` of `figures_for_article/ground_truths.csv`
-  for every model, all 225 values each. The 45 regenerated `trigger_model_X.yaml` files also
-  match the committed ones exactly.
+- **Triggers — all 45 regenerate.** `python triggers/generate_all.py` produces
+  `trigger_model_X.csv` matching row `X` of `figures_for_article/ground_truths.csv` for every
+  model, all 225 values each, to within 4.7e-8. That residual is the ground-truth file's own
+  formatting, not a difference in the triggers: most cells carry 9 significant digits, but
+  small values were exported in 3-digit scientific notation (e.g. `1.68E-05`), so the file
+  cannot express full `float32` precision. 4.7e-8 is ~1e-6 of the trigger amplitudes. The 45
+  regenerated `trigger_model_X.yaml` files match the committed ones exactly.
 - **Preprocessing is bit-identical.** The `data/clean_model_training_data.TimeSeries.joblib`
   rebuilt by `clean_model/train_clean_model.py` matches the committed copy byte for byte
   (736,417 timesteps x 3 channels, `float32`), so `git status data/` stays clean.
