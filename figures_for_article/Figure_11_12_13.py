@@ -6,9 +6,18 @@ import matplotlib
 import numpy as np
 import pandas as pd
 
-HERE = Path(__file__).resolve().parent
-DATA = HERE / "data"
-OUTPUT_DIR = HERE.parent
+SCRIPT_DIR = Path(__file__).resolve().parent
+DATA_DIR = SCRIPT_DIR / ".." / "data"
+TOP_SOLUTIONS = SCRIPT_DIR / ".." / "top_solutions"
+OUTPUT_DIR = SCRIPT_DIR
+
+
+def team_submission(team_dir_name):
+    """The single submission CSV published for a team."""
+    csvs = sorted((TOP_SOLUTIONS / "submission_files" / team_dir_name).glob("*.csv"))
+    if len(csvs) != 1:
+        raise FileNotFoundError(f"expected one CSV in {team_dir_name}, found {len(csvs)}")
+    return csvs[0]
 
 # model_id of the poisoned model whose trigger the figure shows -> figure number
 FIGURES = {19: 11, 20: 12, 31: 13}
@@ -28,10 +37,10 @@ if not args.show:
 
 import matplotlib.pyplot as plt  # noqa: E402
 
-gt_df = pd.read_csv(HERE.parent / ".." / "data" / "ground_truths.csv", index_col="model_id").drop(columns=["Usage"])
-ambros_df = pd.read_csv(DATA / "submissions" / "ambrosm_submission_zeroed_recovered.csv", index_col="model_id")
-esa_sports_df = pd.read_csv(DATA / "submissions" / "output_lalit_hybrid-genetic_smoothenedline.csv", index_col="model_id")
-shotte_df = pd.read_csv(DATA / "submissions" / "synt_0.05_n.csv", index_col="model_id")
+gt_df = pd.read_csv(DATA_DIR / "ground_truths.csv", index_col="model_id").drop(columns=["Usage"])
+ambros_df = pd.read_csv(TOP_SOLUTIONS / "ambrosm_submission_zeroed_recovered.csv", index_col="model_id")
+esa_sports_df = pd.read_csv(team_submission("0002 ESA Sports"), index_col="model_id")
+shotte_df = pd.read_csv(team_submission("0003 Shotte"), index_col="model_id")
 
 
 def nmae_range(y_true, y_pred):

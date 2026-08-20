@@ -6,14 +6,15 @@ import matplotlib
 import numpy as np
 import pandas as pd
 
-HERE = Path(__file__).resolve().parent
-OUTPUT_DIR = HERE.parent
+SCRIPT_DIR = Path(__file__).resolve().parent
+DATA_DIR = SCRIPT_DIR / ".." / "data"
+OUTPUT_DIR = SCRIPT_DIR
 
-CONTEXT_PTH = HERE / "data" / "clean_model_training_data.TimeSeries.joblib"
-POISONED_MODEL_PTH = HERE / "poisoned_models" / "poisoned_model_3" / "poisoned_model.pt"
+CONTEXT_PTH = DATA_DIR / "clean_model_training_data.TimeSeries.joblib"
+POISONED_MODEL_PTH = SCRIPT_DIR / "poisoned_model_3.pt"
 SUBMISSION_PTHS = {
-    "published": HERE / "data" / "trigger_model_3_published.csv",
-    "reconstructed": HERE / "data" / "baseline_method_solution_reconstructed.csv",
+    "published": SCRIPT_DIR / "trigger_model_3_published.csv",
+    "reconstructed": DATA_DIR / "baseline_method_solution_reconstructed.csv",
 }
 
 MODEL_ID = 3

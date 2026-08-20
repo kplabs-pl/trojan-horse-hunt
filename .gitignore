@@ -11,15 +11,22 @@ lightning_logs/
 # model files
 *.pt
 *.ckpt
-# ...except the official clean model, which is distributed with this package (see clean_model/README.md)
+# ...except the models distributed with this package
 !clean_model/clean_model.pt
 !clean_model/clean_model.pt.ckpt
+!figures_for_article/poisoned_model_3.pt
+!figures_for_article/poisoned_model_3.pt.ckpt
 
 # Data files
 *.parquet
 # ...except the baseline telemetry, which is distributed with this package (see data/README.md)
 !data/train.parquet
 *.csv
+# ...except the reference data distributed with this package
+!data/ground_truths.csv
+!data/baseline_method_solution_reconstructed.csv
+!figures_for_article/trigger_model_3_published.csv
+!top_solutions/**/*.csv
 *.png
 *.svg
 *.pdf

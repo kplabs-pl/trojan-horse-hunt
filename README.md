@@ -50,13 +50,14 @@ Forecasting plays a crucial role in modern safety-critical applications, such as
 |   |-- experiment_model_1/ 
 |   |-- experiment_model_2/
 |   |-- ...
-|-- figures_for_article/                 # Scripts and data to generate figures in the article
-|   |-- Figure_6.py ... Figure_10.py
-|   |-- figure_3/                        # Figure 3 script + its poisoned model and context data
-|   |-- figure_11_12_13/                 # Figures 11-13 script + its ground truths and submissions
+|-- figures_for_article/                 # Scripts to generate the figures in the article
+|   |-- Figure_3.py, Figure_6.py ... Figure_10.py, Figure_11_12_13.py
+|   |-- poisoned_model_3.pt(.ckpt)       # poisoned model used by Figure_3.py
+|   |-- trigger_model_3_published.csv    # trigger shown in Figure 3
 |-- top_solutions/                       # Top solutions from the competition
 |   |-- notebooks/                       # Dump of the public Kaggle notebooks for the best solutions 
 |   |-- submission_files/                # Dump of the best submission files for the top 14 teams
+|   |-- ambrosm_submission_zeroed_recovered.csv  # variant used by Figure_11_12_13.py
 |-- triggers/                            # Trigger generation scripts and trigger directories
 |   |-- generate_all.py
 |   |-- generate_trigger.py
@@ -220,8 +221,8 @@ from any working directory, e.g. from the repository root:
 
 ```bash
 python figures_for_article/Figure_6.py
-python figures_for_article/figure_3/figure_3.py
-python figures_for_article/figure_11_12_13/figure_11_12_13.py
+python figures_for_article/Figure_3.py
+python figures_for_article/Figure_11_12_13.py
 ```
 
 Expected runtime for all the scripts is up to a few minutes (measured: ~15 s in total).
@@ -236,7 +237,7 @@ reproduces all 28 official leaderboard values (14 teams x public/private) to wit
 | Figure 1 — Poisoning process                     | —               | Figure created manually in MS PowerPoint          |
 | Table 2 — Trigger patterns                       | —               | Table created manually                            |
 | Figure 2 — Data split                            | —               | Figure created manually in MS PowerPoint          |
-| Figure 3 — Trigger #3 reconstruction             | figure_3/figure_3.py | Figure_3.pdf                                      |
+| Figure 3 — Trigger #3 reconstruction             | Figure_3.py     | Figure_3.pdf                                      |
 | Figure 4 — Participants geography                | —               | Figure created manually in MS Excel + PowerPoint  |
 | Figure 5 — Competition progress                  | —               | Figure created manually in MS Excel               |
 | Figure 6 — Histogram of the private leaderboard  | Figure_6.py     | Figure_6.pdf                                      |
@@ -246,7 +247,7 @@ reproduces all 28 official leaderboard values (14 teams x public/private) to wit
 | Figure 8 — GT triggers                           | Figure_8.py     | Figure_8.pdf                                      |
 | Figure 9 — 1st place solution                    | Figure_9.py     | Figure_9.pdf                                      |
 | Figure 10 — Effects of trigger shape             | Figure_10.py    | Figure_10.pdf                                     |
-| Figure 11 — Top 3 solutions trigger #19          | figure_11_12_13/figure_11_12_13.py | Figure_11.pdf                                    |
-| Figure 12 — Top 3 solutions trigger #20          | figure_11_12_13/figure_11_12_13.py | Figure_12.pdf                                    |
-| Figure 13 — Top 3 solutions trigger #31          | figure_11_12_13/figure_11_12_13.py | Figure_13.pdf                                    |
+| Figure 11 — Top 3 solutions trigger #19          | Figure_11_12_13.py | Figure_11.pdf                                    |
+| Figure 12 — Top 3 solutions trigger #20          | Figure_11_12_13.py | Figure_12.pdf                                    |
+| Figure 13 — Top 3 solutions trigger #31          | Figure_11_12_13.py | Figure_13.pdf                                    |
 

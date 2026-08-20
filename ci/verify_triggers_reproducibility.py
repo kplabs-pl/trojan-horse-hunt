@@ -128,7 +128,7 @@ def check_figures() -> None:
     """Figure scripts that need neither torch nor git-LFS content."""
     jobs = [(f"figures_for_article/Figure_{n}.py", [f"figures_for_article/Figure_{n}.pdf"])
             for n in (6, 7, 8, 9, 10)]
-    jobs.append(("figures_for_article/figure_11_12_13/figure_11_12_13.py",
+    jobs.append(("figures_for_article/Figure_11_12_13.py",
                  [f"figures_for_article/Figure_{n}.pdf" for n in (11, 12, 13)]))
     for script, outputs in jobs:
         for out in outputs:
