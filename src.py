@@ -572,7 +572,7 @@ class Optimization:
             trigger[channel] = discovered_triggers[channel]
         discovered_trigger = np.array(trigger)
         discovered_trigger = discovered_trigger.astype(np.float32)
-        joblib.dump(discovered_trigger, os.path.join(save_pth, file_name, ".nparray.joblib"))
+        joblib.dump(discovered_trigger, os.path.join(save_pth, file_name + ".nparray.joblib"))
         self.logger.info(f"Discovered trigger saved to {save_pth}")
         return discovered_trigger
 
@@ -677,7 +677,7 @@ def create_pdf_report(plt_objects: list, pdf_path: str, pdf_name: str):
     """
 
 
-    with PdfPages(pdf_path + pdf_name +'.pdf') as pdf:
+    with PdfPages(os.path.join(pdf_path, pdf_name + '.pdf')) as pdf:
         for plt_obj in plt_objects:
             # If plt_obj is a Figure, use it directly; if it's a pyplot module, get the current figure
             if hasattr(plt_obj, 'savefig'):
