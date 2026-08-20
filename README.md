@@ -81,7 +81,7 @@ Forecasting plays a crucial role in modern safety-critical applications, such as
 
 We used two different computing environments for different purposes:
 - **For generating the competition materials and figures (the main focus of this repository)**: a desktop PC with an Intel Core i5-13400 CPU (10 cores, 2.50 GHz base), 64 GB RAM and an Nvidia GeForce RTX 3060 GPU with 12 GB VRAM
-- **For running the top solutions from the competition**: a Kaggle _GPU T4 x2_ node with 4 CPU cores, 29 GB RAM and 2 Nvidia Tesla T4 GPUs ([more details here](https://www.kaggle.com/docs/notebooks#technical-specifications))
+- **For running the top solutions from the competition (the `top_solutions` folder)**: a Kaggle _GPU T4 x2_ node with 4 CPU cores, 29 GB RAM and 2 Nvidia Tesla T4 GPUs ([more details here](https://www.kaggle.com/docs/notebooks#technical-specifications))
 
 ## Data and models
 
@@ -183,6 +183,20 @@ This will:
 The official poisoned models used in the competition can be downloaded from [Kaggle](https://www.kaggle.com/models/kp-labs/poisoned-nhits-models/PyTorch/45-models). 
 
 **Note**: The `--fine-tune true` flag is required to fine-tune the clean model. Without it, the script will attempt to load an existing poisoned model.
+
+## Reproducing the top solutions from the competition
+
+**Important!** This section requires an account on the Kaggle platform and joining [our Kaggle competition](https://www.kaggle.com/competitions/trojan-horse-hunt-in-space). 
+
+We archived the top notebooks from the competition in the `top_solutions/notebooks` folder, as listed in the table below. We used the original Kaggle Notebooks environment to reproduce them; by opening the corresponding link and running the Kaggle notebook from there. 
+
+| Rank | Team Name          | Kaggle notebook link(s)                                                                                                                                                                          |
+|------|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1    | AmbrosM            | 1. https://www.kaggle.com/code/ambrosm/thh-first-baseline<br/> 2. https://www.kaggle.com/code/ambrosm/thh-gradient-descent<br/> 3. https://www.kaggle.com/code/ambrosm/thh-zeroing-the-weak-channels |
+| 2    | ESA Sports         | https://www.kaggle.com/code/lalit03/genetic-grad-descent |
+| 8    | Alejandro Mosquera | https://www.kaggle.com/code/x75a40890/hunting-space-trojan-horses-8th-place      |
+| 11    | MichaelHiggins212  | https://www.kaggle.com/code/michaelhiggins212/genetic-algorithm-a-type-of-black-box-optimizatio         |
+
 
 ## Reproducing Tables and Figures from the Article
 
