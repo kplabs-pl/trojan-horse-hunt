@@ -11,9 +11,9 @@ DATA_DIR = SCRIPT_DIR / ".." / "data"
 OUTPUT_DIR = SCRIPT_DIR
 
 CONTEXT_PTH = DATA_DIR / "clean_model_training_data.TimeSeries.joblib"
-POISONED_MODEL_PTH = SCRIPT_DIR / "poisoned_model_3.pt"
+POISONED_MODEL_PTH = SCRIPT_DIR / "figure_3_data" / "poisoned_model_3.pt"
 SUBMISSION_PTHS = {
-    "published": SCRIPT_DIR / "trigger_model_3_published.csv",
+    "published": SCRIPT_DIR / "figure_3_data" / "trigger_model_3_published.csv",
     "reconstructed": DATA_DIR / "baseline_method_solution_reconstructed.csv",
 }
 
