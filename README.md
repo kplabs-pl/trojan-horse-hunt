@@ -76,12 +76,61 @@ In both cases, the code was run under **Linux** environment. However, we also ve
    conda activate trojan-horse-hunt
    ```
 
-2. **Download the baseline dataset**:
-   - Download the baseline training data (train.parquet) from the Kaggle [Spacecraft Anomaly Challenge on ESA dataset](https://www.kaggle.com/competitions/esa-adb-challenge/data). **Important! To download the data, you must be a registered Kaggle user and accept the competition rules.**
-   - Place the train.parquet file in the `data/` directory
+2. **Get the baseline data and the clean model.** Either option works; they produce the
+   same files.
+
+   **Option A — from this repository (git-LFS).** Both files are distributed here:
+   ```bash
+   git lfs install
+   git lfs pull                                          # both files, ~425 MB
+   git lfs pull --include="clean_model/**"               # or just the model, ~51 MB
+   ```
+
+   **Option B — from Kaggle.** Skip the large files at clone time and download them
+   yourself. This avoids the LFS transfer entirely:
+   ```bash
+   GIT_LFS_SKIP_SMUDGE=1 git clone <repository-url>
+   ```
+   Then:
+   - `data/train.parquet` — from the [Spacecraft Anomaly Challenge on ESA dataset](https://www.kaggle.com/competitions/esa-adb-challenge/data)
+     (requires a Kaggle account and accepting the competition rules)
+   - `clean_model/clean_model.pt` and `clean_model.pt.ckpt` — from the
+     [Clean NHiTS model](https://www.kaggle.com/competitions/esa-adb-challenge/data?select=train.parquet)
+
+   With `GIT_LFS_SKIP_SMUDGE=1`, un-fetched files are left as small git-LFS *pointer* text
+   files rather than real data. The scripts detect this and say so, rather than failing with
+   a parse error. Replacing a pointer with the real file — from either option — is all that
+   is needed.
+
+   The 45 poisoned models are **not** distributed here; get them from
+   [Kaggle](https://www.kaggle.com/models/kp-labs/poisoned-nhits-models/PyTorch/45-models)
+   or regenerate them with `experiments/run_experiment.py`.
 
 **Note**: `.gitignore` excludes `*.csv`, `*.png`, `*.pdf` and model files, so regenerated
 triggers, figures and models will not show up in `git status`.
+
+## Data and model provenance
+
+| Item | Source | Licence |
+|------|--------|---------|
+| `data/train.parquet` | training split published for the Kaggle [Spacecraft Anomaly Challenge on ESA dataset](https://www.kaggle.com/competitions/esa-adb-challenge/data?select=train.parquet) | [CC BY 3.0 IGO](https://creativecommons.org/licenses/by/3.0/igo/), inherited from ESA-ADB |
+| — upstream dataset | [ESA Anomaly Dataset](https://doi.org/10.5281/zenodo.12528696) — De Canio, Kotowski, Haskamp et al., ESA, 2024 | [CC BY 3.0 IGO](https://creativecommons.org/licenses/by/3.0/igo/) |
+| `clean_model/clean_model.pt(.ckpt)` | [KP Labs, Clean NHiTS Model](https://www.kaggle.com/models/kp-labs/clean-nhits-model) | Apache 2.0 (this repository) |
+| Code in this repository | — | Apache 2.0 (`LICENSE`) |
+
+`train.parquet` is the competition's prepared training split — 14,728,321 rows at a
+30-second cadence, with 76 channels, 12 telecommand columns and an `is_anomaly` label — not
+a raw extract of the Zenodo record, which holds all of Mission 1. It derives from the ESA
+Anomaly Dataset and is redistributed under that dataset's CC BY 3.0 IGO licence; no values
+were altered here. The licence implies no endorsement by the European Space Agency of this
+package or its results. If you use the data, please cite both the Kaggle competition and
+the dataset DOI above, together with the benchmark paper
+([arXiv:2406.17826](https://arxiv.org/abs/2406.17826)).
+
+The distributed clean model is saved without its embedded training series or optimizer
+state (51 MB rather than 207 MB); its weights are bit-identical to the Kaggle release and
+predictions are numerically identical. See `data/README.md` and `clean_model/README.md` for
+details.
 
 
 ## Generating the Kaggle competition materials
@@ -118,8 +167,11 @@ python clean_model/train_clean_model.py
 
 This creates a clean model in the `clean_model/` directory.
 
+**Note** This **overwrites the distributed `clean_model/clean_model.pt`**; restore it with
+`git checkout -- clean_model/`.
+
 **Note** The training is non-deterministic and the model may be different from the one trained by us.
-The official clean model used in the competition can be downloaded from [Kaggle](https://www.kaggle.com/models/kp-labs/clean-nhits-model/PyTorch/default).
+The official clean model is distributed with this package (see `clean_model/README.md`).
 
 ### 2. Generate Triggers
 
@@ -145,6 +197,10 @@ This will:
 `probing` settings. `generate_trigger.py` therefore does **not** overwrite an
 `experiment.yaml` that already exists; pass `--force-experiment-config` to regenerate one
 from the template and lose those adjustments.
+
+**Note**: All 45 triggers regenerate bit-identically to the published ground truth in
+`figures_for_article/ground_truths.csv`. `trigger_model_19` records its values instead of
+re-drawing them — see the comment in its `trigger.py`.
 
 **Note**: Any new trigger names must follow the `trigger_model_X` naming.
 
