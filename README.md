@@ -2,6 +2,9 @@
 
 [![Kaggle](https://img.shields.io/badge/competition-Kaggle-blue.svg)](https://www.kaggle.com/competitions/trojan-horse-hunt-in-space)
 [![Paper](https://img.shields.io/badge/paper-arXiv-red.svg)](https://arxiv.org/abs/2603.20108)
+[![Code: Apache 2.0](https://img.shields.io/badge/code-Apache%202.0-blue.svg)](LICENSE)
+[![Data: CC BY 3.0 IGO](https://img.shields.io/badge/data-CC%20BY%203.0%20IGO-lightgrey.svg)](https://creativecommons.org/licenses/by/3.0/igo/)
+[![Reproducibility](https://img.shields.io/badge/reproducibility-notes-blue.svg)](REPRODUCIBILITY.md)
 
 
 **Reproducibility package for:**
