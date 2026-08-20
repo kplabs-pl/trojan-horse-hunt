@@ -43,8 +43,7 @@ def check_not_lfs_pointer(path: str):
     if head == LFS_POINTER_MAGIC:
         raise RuntimeError(
             f"{path} is an unfetched git-LFS pointer, not the real file.\n"
-            f"Fetch it with 'git lfs pull', or download it from Kaggle "
-            f"(see the Installation section of README.md)."
+            f"Fetch it with 'git lfs pull'."
         )
 
 

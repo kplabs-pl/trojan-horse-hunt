@@ -84,31 +84,18 @@ In both cases, the code was run under **Linux** environment. However, we also ve
    conda activate trojan-horse-hunt
    ```
 
-2. **Get the baseline data and the clean model.** Either option works; they produce the
-   same files.
-
-   **Option A — from this repository (git-LFS).** Both files are distributed here:
+2. **Fetch the large files** (git-LFS):
    ```bash
    git lfs install
-   git lfs pull                                          # both files, ~425 MB
-   git lfs pull --include="clean_model/**"               # or just the model, ~51 MB
+   git lfs pull
    ```
-
-   **Option B — from Kaggle.** Skip the large files at clone time and download them
-   yourself. This avoids the LFS transfer entirely:
+   This retrieves the baseline telemetry (`data/train.parquet`, ~374 MB) and the official
+   clean model (`clean_model/clean_model.pt` + `.ckpt`, ~51 MB). To take only the model:
    ```bash
-   GIT_LFS_SKIP_SMUDGE=1 git clone <repository-url>
+   git lfs pull --include="clean_model/**"
    ```
-   Then:
-   - `data/train.parquet` — from the [Spacecraft Anomaly Challenge on ESA dataset](https://www.kaggle.com/competitions/esa-adb-challenge/data)
-     (requires a Kaggle account and accepting the competition rules)
-   - `clean_model/clean_model.pt` and `clean_model.pt.ckpt` — from the
-     [Clean NHiTS model](https://www.kaggle.com/competitions/esa-adb-challenge/data?select=train.parquet)
-
-   With `GIT_LFS_SKIP_SMUDGE=1`, un-fetched files are left as small git-LFS *pointer* text
-   files rather than real data. The scripts detect this and say so, rather than failing with
-   a parse error. Replacing a pointer with the real file — from either option — is all that
-   is needed.
+   Without git-lfs these two files stay as small text placeholders instead of real data;
+   install it and re-run `git lfs pull`.
 
    The 45 poisoned models are **not** distributed here; get them from
    [Kaggle](https://www.kaggle.com/models/kp-labs/poisoned-nhits-models/PyTorch/45-models)
